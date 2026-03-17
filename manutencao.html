@@ -12,6 +12,8 @@
     --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
     --info-bg: #e6f1fb; --info-text: #185fa5;
     --danger-bg: #fcebeb; --danger-text: #a32d2d;
+    --success-bg: #eaf3de; --success-text: #3b6d11;
+    --warning-bg: #faeeda; --warning-text: #854f0b;
     --radius: 8px; --radius-lg: 12px;
   }
   @media (prefers-color-scheme: dark) {
@@ -21,10 +23,13 @@
       --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
       --info-bg: #0c2a45; --info-text: #85b7eb;
       --danger-bg: #3a1414; --danger-text: #f09595;
+      --success-bg: #162408; --success-text: #97c459;
+      --warning-bg: #2a1f08; --warning-text: #ef9f27;
     }
   }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
 
+  /* Login */
   .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
   .login-box { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; width: 100%; max-width: 340px; }
   .login-box h2 { font-size: 18px; font-weight: 500; margin-bottom: 0.4rem; }
@@ -34,21 +39,25 @@
   .btn-full { width: 100%; background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 10px; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
   .btn-full:hover { opacity: 0.82; }
 
+  /* App */
   #app { display: none; }
-  .topbar { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 0 1.5rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
-  .topbar-left { display: flex; flex-direction: column; }
+  .topbar { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 0 1.5rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; gap: 12px; }
+  .topbar-left { display: flex; flex-direction: column; flex-shrink: 0; }
   .topbar-title { font-size: 16px; font-weight: 500; }
   .topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
-  .topbar-right { display: flex; align-items: center; gap: 10px; }
-  .btn-logout { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 6px 12px; cursor: pointer; font-size: 12px; color: var(--text2); transition: all 0.15s; }
+  .topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .btn-logout { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 6px 12px; cursor: pointer; font-size: 12px; color: var(--text2); transition: all 0.15s; white-space: nowrap; }
   .btn-logout:hover { background: var(--bg2); color: var(--text); }
+  .btn-new { background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: opacity 0.15s; }
+  .btn-new:hover { opacity: 0.82; }
+  .btn-import { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 14px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; color: var(--text); transition: all 0.15s; }
+  .btn-import:hover { background: var(--bg2); }
+
   .container { max-width: 980px; margin: 0 auto; padding: 1.5rem 1rem; }
   .toolbar { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
   .toolbar input[type=text] { flex: 1; min-width: 200px; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 14px; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; }
   .toolbar input[type=text]:focus { border-color: var(--info-text); }
   .badge { font-size: 12px; padding: 4px 12px; border-radius: var(--radius); background: var(--info-bg); color: var(--info-text); font-weight: 500; white-space: nowrap; }
-  .btn-new { background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: opacity 0.15s; }
-  .btn-new:hover { opacity: 0.82; }
   .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
   thead th { text-align: left; font-size: 11px; font-weight: 500; color: var(--text2); padding: 10px 14px; border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
@@ -71,6 +80,7 @@
   .btn-icon.del:hover { border-color: var(--danger-text); color: var(--danger-text); background: var(--danger-bg); }
   .empty { text-align: center; padding: 3rem; color: var(--text2); font-size: 14px; }
 
+  /* Modal */
   .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 50; align-items: center; justify-content: center; padding: 1rem; }
   .overlay.open { display: flex; }
   .modal { background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); padding: 1.5rem; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
@@ -86,6 +96,20 @@
   .btn-save { background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 8px 18px; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity 0.15s; }
   .btn-save:hover { opacity: 0.82; }
   .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Import modal */
+  .import-drop { border: 1.5px dashed var(--border2); border-radius: var(--radius-lg); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.15s; margin-bottom: 1rem; }
+  .import-drop:hover, .import-drop.drag { border-color: var(--info-text); background: var(--info-bg); }
+  .import-drop p { font-size: 14px; color: var(--text2); margin-top: 6px; }
+  .import-drop strong { font-size: 15px; color: var(--text); }
+  .import-preview { max-height: 220px; overflow-y: auto; margin-bottom: 1rem; }
+  .import-preview table { font-size: 12px; }
+  .import-preview thead th { font-size: 11px; padding: 6px 10px; }
+  .import-preview tbody td { padding: 5px 10px; }
+  .import-result { font-size: 13px; padding: 10px 14px; border-radius: var(--radius); margin-bottom: 1rem; }
+  .import-result.success { background: var(--success-bg); color: var(--success-text); }
+  .import-result.warning { background: var(--warning-bg); color: var(--warning-text); }
+  #import-file-input { display: none; }
 
   .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
   .dot-ok { background: #63b940; }
@@ -130,6 +154,7 @@
       <div class="topbar-sub" id="status-label"><span class="status-dot dot-load"></span>Conectando...</div>
     </div>
     <div class="topbar-right">
+      <button class="btn-import" onclick="openImport()">⬆ Importar Excel</button>
       <button class="btn-new" onclick="openModal()">+ Novo procedimento</button>
       <button class="btn-logout" onclick="doLogout()">Sair</button>
     </div>
@@ -160,7 +185,7 @@
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL EDIÇÃO -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <h3 id="modal-title">Novo procedimento</h3>
@@ -168,7 +193,7 @@
     <div class="field"><label>Código TUSS</label><input type="text" id="f-tuss" placeholder="Ex: 40304361" /></div>
     <div class="field"><label>Clínica *</label><input type="text" id="f-clinic" placeholder="Ex: Clínica RCC" /></div>
     <div class="field"><label>Telefone</label><input type="text" id="f-tel" placeholder="Ex: (19) 99999-9999" /></div>
-    <div class="field"><label>Observações</label><textarea id="f-obs" placeholder="Ex: Agendar com 2 dias de antecedência, trazer pedido médico..."></textarea></div>
+    <div class="field"><label>Observações</label><textarea id="f-obs" placeholder="Ex: Trazer pedido médico, jejum de 4h..."></textarea></div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
       <button class="btn-save" id="btn-save" onclick="save()">Salvar</button>
@@ -176,7 +201,42 @@
   </div>
 </div>
 
+<!-- MODAL IMPORTAÇÃO -->
+<div class="overlay" id="overlay-import">
+  <div class="modal" style="max-width:560px;">
+    <h3>Importar planilha Excel</h3>
+
+    <div class="import-drop" id="import-drop" onclick="document.getElementById('import-file-input').click()"
+         ondragover="event.preventDefault();this.classList.add('drag')"
+         ondragleave="this.classList.remove('drag')"
+         ondrop="handleDrop(event)">
+      <div style="font-size:28px">📂</div>
+      <strong>Clique para selecionar ou arraste o arquivo</strong>
+      <p>Formato aceito: .xlsx — colunas: Procedimento, Codigo_TUSS, Clinica, Telefone, Observacoes</p>
+    </div>
+    <input type="file" id="import-file-input" accept=".xlsx" onchange="handleFile(this.files[0])" />
+
+    <div id="import-result" style="display:none"></div>
+    <div id="import-preview" class="import-preview" style="display:none">
+      <div class="card">
+        <table>
+          <thead><tr><th>Procedimento</th><th>TUSS</th><th>Clínica</th><th>Status</th></tr></thead>
+          <tbody id="preview-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeImport()">Cancelar</button>
+      <button class="btn-save" id="btn-import-confirm" style="display:none" onclick="confirmImport()">Importar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
+
+<!-- SheetJS -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -203,6 +263,7 @@ const colRef = collection(db, "procedimentos");
 let DATA = [];
 let editId = null;
 let unsubscribe = null;
+let importRows = [];
 
 function setStatus(state) {
   const el = document.getElementById('status-label');
@@ -215,16 +276,14 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  setTimeout(() => t.classList.remove('show'), 2800);
 }
 
 function render() {
   const q = document.getElementById('search').value.toLowerCase().trim();
-
   let filtered = DATA.filter(d =>
     !q || [d.proc, d.clinic, d.tel, d.tuss, d.obs].join(' ').toLowerCase().includes(q)
   );
-
   filtered.sort((a, b) => (a.proc || '').localeCompare(b.proc || '', 'pt-BR'));
 
   document.getElementById('count').textContent =
@@ -235,7 +294,6 @@ function render() {
     tb.innerHTML = `<tr><td colspan="6"><div class="empty">Nenhum procedimento encontrado</div></td></tr>`;
     return;
   }
-
   tb.innerHTML = filtered.map(d => {
     const tuss = d.tuss ? `<span class="tuss-code">${d.tuss}</span>` : '<span style="color:var(--text2)">—</span>';
     const proc = (d.proc || '').replace(/'/g, "\\'");
@@ -245,16 +303,15 @@ function render() {
       <td title="${d.clinic||''}">${d.clinic || '—'}</td>
       <td title="${d.tel||''}">${d.tel || '—'}</td>
       <td class="obs-cell">${d.obs || '—'}</td>
-      <td>
-        <div class="actions">
-          <button class="btn-icon" onclick="window._edit('${d.id}')" title="Editar">✏️</button>
-          <button class="btn-icon del" onclick="window._del('${d.id}','${proc}')" title="Excluir">🗑</button>
-        </div>
-      </td>
+      <td><div class="actions">
+        <button class="btn-icon" onclick="window._edit('${d.id}')" title="Editar">✏️</button>
+        <button class="btn-icon del" onclick="window._del('${d.id}','${proc}')" title="Excluir">🗑</button>
+      </div></td>
     </tr>`;
   }).join('');
 }
 
+// ---- Login / Logout ----
 window.doLogin = function() {
   const val = document.getElementById('pwd').value;
   if (val === SENHA) {
@@ -286,6 +343,7 @@ function startFirestore() {
   }, () => setStatus('err'));
 }
 
+// ---- CRUD ----
 window._edit = function(id) {
   const d = DATA.find(x => x.id === id);
   if (!d) return;
@@ -327,7 +385,6 @@ window.save = async function() {
   const tel = document.getElementById('f-tel').value.trim();
   const obs = document.getElementById('f-obs').value.trim();
   if (!proc || !clinic) { alert('Preencha ao menos o procedimento e a clínica.'); return; }
-
   const btn = document.getElementById('btn-save');
   btn.disabled = true; btn.textContent = 'Salvando...';
   try {
@@ -345,6 +402,127 @@ window.save = async function() {
 
 document.getElementById('overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('overlay')) closeModal();
+});
+
+// ---- Importação Excel ----
+window.openImport = function() {
+  importRows = [];
+  document.getElementById('import-result').style.display = 'none';
+  document.getElementById('import-preview').style.display = 'none';
+  document.getElementById('btn-import-confirm').style.display = 'none';
+  document.getElementById('import-file-input').value = '';
+  document.getElementById('import-drop').classList.remove('drag');
+  document.getElementById('overlay-import').classList.add('open');
+};
+
+window.closeImport = function() {
+  document.getElementById('overlay-import').classList.remove('open');
+};
+
+window.handleDrop = function(e) {
+  e.preventDefault();
+  document.getElementById('import-drop').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+};
+
+window.handleFile = function(file) {
+  if (!file || !file.name.endsWith('.xlsx')) {
+    alert('Por favor selecione um arquivo .xlsx');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+      if (rows.length === 0) {
+        showResult('Nenhuma linha encontrada na planilha.', 'warning');
+        return;
+      }
+
+      // Normaliza nomes de colunas
+      const normalize = s => String(s).trim().toLowerCase().replace(/[^a-z]/g, '');
+      // Chave composta: procedimento + clínica
+      const existingProcs = new Set(DATA.map(d => `${(d.proc||'').trim().toLowerCase()}||${(d.clinic||'').trim().toLowerCase()}`));
+
+      importRows = [];
+      rows.forEach(row => {
+        const keys = {};
+        Object.keys(row).forEach(k => keys[normalize(k)] = row[k]);
+        const proc = String(keys['procedimento'] || '').trim();
+        if (!proc) return;
+        const clinic = String(keys['clinica'] || '').trim();
+        const isDup = existingProcs.has(`${proc.toLowerCase()}||${clinic.toLowerCase()}`);
+        importRows.push({
+          proc,
+          tuss: String(keys['codigotuss'] || '').trim(),
+          clinic,
+          tel: String(keys['telefone'] || '').trim(),
+          obs: String(keys['observacoes'] || '').trim(),
+          isDup
+        });
+      });
+
+      const novos = importRows.filter(r => !r.isDup).length;
+      const dups = importRows.filter(r => r.isDup).length;
+
+      const msg = `${importRows.length} linha(s) lida(s): ${novos} novo(s) para importar${dups > 0 ? `, ${dups} já existente(s) (serão ignorados)` : ''}.`;
+      showResult(msg, novos > 0 ? 'success' : 'warning');
+
+      // Preview
+      const tb = document.getElementById('preview-tbody');
+      tb.innerHTML = importRows.map(r => `<tr style="${r.isDup ? 'opacity:0.45' : ''}">
+        <td style="padding:5px 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px" title="${r.proc}">${r.proc}</td>
+        <td style="padding:5px 10px">${r.tuss || '—'}</td>
+        <td style="padding:5px 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px" title="${r.clinic}">${r.clinic || '—'}</td>
+        <td style="padding:5px 10px;font-size:11px;font-weight:500;color:${r.isDup ? 'var(--text2)' : 'var(--success-text)'}">${r.isDup ? 'já existe' : 'novo'}</td>
+      </tr>`).join('');
+
+      document.getElementById('import-preview').style.display = 'block';
+      document.getElementById('btn-import-confirm').style.display = novos > 0 ? 'inline-block' : 'none';
+      if (novos > 0) {
+        document.getElementById('btn-import-confirm').textContent = `Importar ${novos} novo(s)`;
+      }
+    } catch(err) {
+      showResult('Erro ao ler o arquivo. Verifique se é um .xlsx válido.', 'warning');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+};
+
+function showResult(msg, type) {
+  const el = document.getElementById('import-result');
+  el.className = 'import-result ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+window.confirmImport = async function() {
+  const novos = importRows.filter(r => !r.isDup);
+  if (novos.length === 0) return;
+  const btn = document.getElementById('btn-import-confirm');
+  btn.disabled = true; btn.textContent = 'Importando...';
+  try {
+    for (const r of novos) {
+      await addDoc(colRef, {
+        proc: r.proc, tuss: r.tuss, clinic: r.clinic,
+        tel: r.tel, obs: r.obs, createdAt: serverTimestamp()
+      });
+    }
+    showToast(`${novos.length} procedimento(s) importado(s) com sucesso!`);
+    closeImport();
+  } catch(e) {
+    alert('Erro ao importar: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+document.getElementById('overlay-import').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay-import')) closeImport();
 });
 </script>
 </body>
