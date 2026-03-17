@@ -162,7 +162,7 @@
 
   <div class="container">
     <div class="toolbar">
-      <input type="text" id="search" placeholder="Buscar procedimento, clínica, cód. TUSS..." oninput="render()" />
+      <input type="text" id="search" placeholder="Buscar procedimento, clínica, cód. TUSS..." oninput="window.render()" />
       <span class="badge" id="count">—</span>
     </div>
     <div class="card">
@@ -284,10 +284,10 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-function render() {
+window.render = function() {
   const q = document.getElementById('search').value.toLowerCase().trim();
   let filtered = DATA.filter(d =>
-    !q || q.split(/\s+/).filter(Boolean).every(w => [d.proc, d.clinic, d.tel, d.tuss, d.obs].join(' ').toLowerCase().includes(w))
+    !q || q.trim().split(/\s+/).filter(Boolean).every(w => [d.proc, d.clinic, d.tel, d.tuss, d.obs].map(v => String(v||'')).join(' ').toLowerCase().includes(w.toLowerCase()))
   );
   filtered.sort((a, b) => (a.proc || '').localeCompare(b.proc || '', 'pt-BR'));
 
@@ -450,7 +450,7 @@ window.handleFile = function(file) {
       // Lê por posição: A=Procedimento, B=Codigo_TUSS, C=Clinica, D=Telefone, E=Observacoes
       const existingProcs = new Set(DATA.map(d => `${(d.proc||'').trim().toLowerCase()}||${(d.clinic||'').trim().toLowerCase()}`));
       const range = XLSX.utils.decode_range(ws['!ref']);
-      const get = (r, c) => { const cell = ws[XLSX.utils.encode_cell({r, c})]; return cell ? String(cell.v).trim() : ''; };
+      const get = (r, c) => { const cell = ws[XLSX.utils.encode_cell({r, c})]; return cell ? String(cell.w || cell.v || '').trim() : ''; };
 
       importRows = [];
       for (let r = range.s.r + 1; r <= range.e.r; r++) {

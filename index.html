@@ -69,7 +69,7 @@
 
 <div class="container">
   <div class="toolbar">
-    <input type="text" id="search" placeholder="Buscar procedimento, clínica, cód. TUSS ou telefone..." oninput="render()" />
+    <input type="text" id="search" placeholder="Buscar procedimento, clínica, cód. TUSS ou telefone..." oninput="window.render()" />
     <span class="badge" id="count">—</span>
   </div>
   <div class="card">
@@ -114,11 +114,11 @@ function setStatus(state) {
   else el.innerHTML = '<span class="status-dot dot-load"></span>Carregando...';
 }
 
-function render() {
+window.render = function() {
   const q = document.getElementById('search').value.toLowerCase().trim();
 
   let filtered = DATA.filter(d =>
-    !q || q.split(/\s+/).filter(Boolean).every(w => [d.proc, d.clinic, d.tel, d.tuss, d.obs].join(' ').toLowerCase().includes(w))
+    !q || q.trim().split(/\s+/).filter(Boolean).every(w => [d.proc, d.clinic, d.tel, d.tuss, d.obs].map(v => String(v||'')).join(' ').toLowerCase().includes(w.toLowerCase()))
   );
 
   filtered.sort((a, b) => (a.proc || '').localeCompare(b.proc || '', 'pt-BR'));
