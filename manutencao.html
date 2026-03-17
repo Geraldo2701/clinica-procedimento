@@ -237,6 +237,11 @@
 
 <!-- SheetJS -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+window.doLogin=window.doLogout=window.openModal=window.closeModal=window.save=function(){};
+window.openImport=window.closeImport=window.handleDrop=window.handleFile=function(){};
+window.confirmImport=window._edit=window._del=function(){};
+</script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
