@@ -29,16 +29,15 @@
   .toolbar { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
   .toolbar input { flex: 1; min-width: 200px; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 14px; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; }
   .toolbar input:focus { border-color: var(--info-text); }
-  .toolbar select { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 12px; font-size: 14px; color: var(--text); outline: none; cursor: pointer; }
   .badge { font-size: 12px; padding: 4px 12px; border-radius: var(--radius); background: var(--info-bg); color: var(--info-text); font-weight: 500; white-space: nowrap; }
   .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
   thead th { text-align: left; font-size: 11px; font-weight: 500; color: var(--text2); padding: 10px 14px; border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
-  thead th:nth-child(1) { width: 27%; }
-  thead th:nth-child(2) { width: 13%; }
-  thead th:nth-child(3) { width: 20%; }
-  thead th:nth-child(4) { width: 14%; }
-  thead th:nth-child(5) { width: 26%; }
+  thead th:nth-child(1) { width: 28%; }
+  thead th:nth-child(2) { width: 14%; }
+  thead th:nth-child(3) { width: 22%; }
+  thead th:nth-child(4) { width: 15%; }
+  thead th:nth-child(5) { width: 21%; }
   tbody tr { border-bottom: 0.5px solid var(--border); transition: background 0.12s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: var(--bg2); }
@@ -71,9 +70,6 @@
 <div class="container">
   <div class="toolbar">
     <input type="text" id="search" placeholder="Buscar procedimento, clínica, cód. TUSS ou telefone..." oninput="render()" />
-    <select id="filterCat" onchange="render()">
-      <option value="">Todas as categorias</option>
-    </select>
     <span class="badge" id="count">—</span>
   </div>
   <div class="card">
@@ -120,19 +116,10 @@ function setStatus(state) {
 
 function render() {
   const q = document.getElementById('search').value.toLowerCase().trim();
-  const cf = document.getElementById('filterCat').value;
 
-  const cats = [...new Set(DATA.map(d => d.cat).filter(Boolean))].sort();
-  const sel = document.getElementById('filterCat');
-  const curVal = sel.value;
-  sel.innerHTML = '<option value="">Todas as categorias</option>' +
-    cats.map(c => `<option value="${c}"${c===curVal?' selected':''}>${c}</option>`).join('');
-
-  let filtered = DATA.filter(d => {
-    const matchQ = !q || [d.proc, d.clinic, d.tel, d.tuss, d.obs, d.cat].join(' ').toLowerCase().includes(q);
-    const matchC = !cf || d.cat === cf;
-    return matchQ && matchC;
-  });
+  let filtered = DATA.filter(d =>
+    !q || [d.proc, d.clinic, d.tel, d.tuss, d.obs].join(' ').toLowerCase().includes(q)
+  );
 
   filtered.sort((a, b) => (a.proc || '').localeCompare(b.proc || '', 'pt-BR'));
 
