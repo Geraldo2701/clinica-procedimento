@@ -139,10 +139,10 @@
     <p>Digite a senha para acessar o gerenciamento de procedimentos.</p>
     <div class="field">
       <label>Senha</label>
-      <input type="password" id="pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+      <input type="password" id="pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')window.doLogin()" />
     </div>
     <div class="err-msg" id="err-msg">Senha incorreta. Tente novamente.</div>
-    <button class="btn-full" onclick="doLogin()">Entrar</button>
+    <button class="btn-full" onclick="window.doLogin()">Entrar</button>
   </div>
 </div>
 
@@ -441,35 +441,28 @@ window.handleFile = function(file) {
     try {
       const wb = XLSX.read(e.target.result, { type: 'array' });
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
 
-      if (rows.length === 0) {
+      if (!ws['!ref']) {
         showResult('Nenhuma linha encontrada na planilha.', 'warning');
         return;
       }
 
-      // Normaliza nomes de colunas
-      const normalize = s => String(s).trim().toLowerCase().replace(/[^a-z]/g, '');
-      // Chave composta: procedimento + clínica
+      // Lê por posição: A=Procedimento, B=Codigo_TUSS, C=Clinica, D=Telefone, E=Observacoes
       const existingProcs = new Set(DATA.map(d => `${(d.proc||'').trim().toLowerCase()}||${(d.clinic||'').trim().toLowerCase()}`));
+      const range = XLSX.utils.decode_range(ws['!ref']);
+      const get = (r, c) => { const cell = ws[XLSX.utils.encode_cell({r, c})]; return cell ? String(cell.v).trim() : ''; };
 
       importRows = [];
-      rows.forEach(row => {
-        const keys = {};
-        Object.keys(row).forEach(k => keys[normalize(k)] = row[k]);
-        const proc = String(keys['procedimento'] || '').trim();
-        if (!proc) return;
-        const clinic = String(keys['clinica'] || '').trim();
-        const isDup = existingProcs.has(`${proc.toLowerCase()}||${clinic.toLowerCase()}`);
-        importRows.push({
-          proc,
-          tuss: String(keys['codigotuss'] || '').trim(),
-          clinic,
-          tel: String(keys['telefone'] || '').trim(),
-          obs: String(keys['observacoes'] || '').trim(),
-          isDup
-        });
-      });
+      for (let r = range.s.r + 1; r <= range.e.r; r++) {
+        const proc   = get(r, 0);
+        if (!proc) continue;
+        const tuss   = get(r, 1);
+        const clinic = get(r, 2);
+        const tel    = get(r, 3);
+        const obs    = get(r, 4);
+        const isDup  = existingProcs.has(`${proc.toLowerCase()}||${clinic.toLowerCase()}`);
+        importRows.push({ proc, tuss, clinic, tel, obs, isDup });
+      }
 
       const novos = importRows.filter(r => !r.isDup).length;
       const dups = importRows.filter(r => r.isDup).length;
