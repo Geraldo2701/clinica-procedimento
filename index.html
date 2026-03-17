@@ -22,10 +22,10 @@
     }
   }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
-  .topbar { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 0 1.5rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .topbar { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 0 1.5rem; height: 56px; display: flex; align-items: center; position: sticky; top: 0; z-index: 10; }
   .topbar-title { font-size: 16px; font-weight: 500; }
   .topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
-  .container { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem; }
+  .container { max-width: 980px; margin: 0 auto; padding: 1.5rem 1rem; }
   .toolbar { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
   .toolbar input { flex: 1; min-width: 200px; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 14px; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; }
   .toolbar input:focus { border-color: var(--info-text); }
@@ -34,31 +34,33 @@
   .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
   thead th { text-align: left; font-size: 11px; font-weight: 500; color: var(--text2); padding: 10px 14px; border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
-  thead th:nth-child(1) { width: 38%; }
-  thead th:nth-child(2) { width: 22%; }
-  thead th:nth-child(3) { width: 25%; }
-  thead th:nth-child(4) { width: 15%; }
+  thead th:nth-child(1) { width: 27%; }
+  thead th:nth-child(2) { width: 13%; }
+  thead th:nth-child(3) { width: 20%; }
+  thead th:nth-child(4) { width: 14%; }
+  thead th:nth-child(5) { width: 26%; }
   tbody tr { border-bottom: 0.5px solid var(--border); transition: background 0.12s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: var(--bg2); }
   tbody td { padding: 11px 14px; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .cat-pill { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500; }
+  tbody td.obs-cell { white-space: normal; word-break: break-word; font-size: 13px; color: var(--text2); }
+  .tuss-code { font-family: monospace; font-size: 12px; background: var(--bg3); padding: 2px 7px; border-radius: var(--radius); color: var(--text2); }
   .empty { text-align: center; padding: 3rem; color: var(--text2); font-size: 14px; }
   .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
   .dot-ok { background: #63b940; }
   .dot-load { background: #ef9f27; animation: pulse 1s infinite; }
   .dot-err { background: #e24b4a; }
   @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
-  @media (max-width: 600px) {
-    thead th:nth-child(2), tbody td:nth-child(2) { display: none; }
-    thead th:nth-child(1) { width: 45%; }
-    thead th:nth-child(3) { width: 35%; }
-    thead th:nth-child(4) { width: 20%; }
+  @media (max-width: 640px) {
+    thead th:nth-child(2), tbody td:nth-child(2),
+    thead th:nth-child(5), tbody td:nth-child(5) { display: none; }
+    thead th:nth-child(1) { width: 40%; }
+    thead th:nth-child(3) { width: 36%; }
+    thead th:nth-child(4) { width: 24%; }
   }
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <div>
     <div class="topbar-title">Procedimentos da Clínica</div>
@@ -68,7 +70,7 @@
 
 <div class="container">
   <div class="toolbar">
-    <input type="text" id="search" placeholder="Buscar procedimento, clínica ou telefone..." oninput="render()" />
+    <input type="text" id="search" placeholder="Buscar procedimento, clínica, cód. TUSS ou telefone..." oninput="render()" />
     <select id="filterCat" onchange="render()">
       <option value="">Todas as categorias</option>
     </select>
@@ -79,13 +81,14 @@
       <thead>
         <tr>
           <th>Procedimento</th>
-          <th>Categoria</th>
+          <th>Cód. TUSS</th>
           <th>Clínica</th>
           <th>Telefone</th>
+          <th>Observações</th>
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr><td colspan="4"><div class="empty">Carregando...</div></td></tr>
+        <tr><td colspan="5"><div class="empty">Carregando...</div></td></tr>
       </tbody>
     </table>
   </div>
@@ -106,19 +109,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 let DATA = [];
-const catColors = {};
-const palette = [
-  ['#e6f1fb','#185fa5'],['#eaf3de','#3b6d11'],['#faeeda','#854f0b'],
-  ['#faece7','#993c1d'],['#eeedfe','#534ab7'],['#e1f5ee','#0f6e56'],
-  ['#fbeaf0','#993556'],['#ebebea','#5f5e5a']
-];
-let palIdx = 0;
-function catColor(cat) {
-  if (!catColors[cat]) { catColors[cat] = palette[palIdx % palette.length]; palIdx++; }
-  return catColors[cat];
-}
 
 function setStatus(state) {
   const el = document.getElementById('status-label');
@@ -137,31 +128,31 @@ function render() {
   sel.innerHTML = '<option value="">Todas as categorias</option>' +
     cats.map(c => `<option value="${c}"${c===curVal?' selected':''}>${c}</option>`).join('');
 
-  const filtered = DATA.filter(d => {
-    const matchQ = !q || [d.proc, d.clinic, d.tel, d.cat].join(' ').toLowerCase().includes(q);
+  let filtered = DATA.filter(d => {
+    const matchQ = !q || [d.proc, d.clinic, d.tel, d.tuss, d.obs, d.cat].join(' ').toLowerCase().includes(q);
     const matchC = !cf || d.cat === cf;
     return matchQ && matchC;
   });
+
+  filtered.sort((a, b) => (a.proc || '').localeCompare(b.proc || '', 'pt-BR'));
 
   document.getElementById('count').textContent =
     filtered.length + ' procedimento' + (filtered.length !== 1 ? 's' : '');
 
   const tb = document.getElementById('tbody');
   if (filtered.length === 0) {
-    tb.innerHTML = `<tr><td colspan="4"><div class="empty">Nenhum procedimento encontrado</div></td></tr>`;
+    tb.innerHTML = `<tr><td colspan="5"><div class="empty">Nenhum procedimento encontrado</div></td></tr>`;
     return;
   }
 
   tb.innerHTML = filtered.map(d => {
-    const [bg, fg] = d.cat ? catColor(d.cat) : ['#ebebea','#5f5e5a'];
-    const pill = d.cat
-      ? `<span class="cat-pill" style="background:${bg};color:${fg}">${d.cat}</span>`
-      : '<span style="color:var(--text2);font-size:13px">—</span>';
+    const tuss = d.tuss ? `<span class="tuss-code">${d.tuss}</span>` : '<span style="color:var(--text2)">—</span>';
     return `<tr>
       <td title="${d.proc}">${d.proc}</td>
-      <td>${pill}</td>
-      <td title="${d.clinic}">${d.clinic}</td>
+      <td>${tuss}</td>
+      <td title="${d.clinic||''}">${d.clinic || '—'}</td>
       <td title="${d.tel||''}">${d.tel || '—'}</td>
+      <td class="obs-cell">${d.obs || '—'}</td>
     </tr>`;
   }).join('');
 }
