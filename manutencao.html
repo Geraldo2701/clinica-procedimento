@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Manutenção — Procedimentos</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #ebebea;
+    --text: #1a1a18; --text2: #6b6b67;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --info-bg: #e6f1fb; --info-text: #185fa5;
+    --danger-bg: #fcebeb; --danger-text: #a32d2d;
+    --success-bg: #eaf3de; --success-text: #3b6d11;
+    --radius: 8px; --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a; --bg2: #252523; --bg3: #2e2e2c;
+      --text: #f0efeb; --text2: #9a9a94;
+      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
+      --info-bg: #0c2a45; --info-text: #85b7eb;
+      --danger-bg: #3a1414; --danger-text: #f09595;
+      --success-bg: #162408; --success-text: #97c459;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
+
+  /* Login */
+  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .login-box { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; width: 100%; max-width: 340px; }
+  .login-box h2 { font-size: 18px; font-weight: 500; margin-bottom: 0.4rem; }
+  .login-box p { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+  .field input { width: 100%; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 12px; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; }
+  .field input:focus { border-color: var(--info-text); }
+  .err-msg { font-size: 12px; color: var(--danger-text); margin-bottom: 10px; display: none; }
+  .err-msg.show { display: block; }
+  .btn-full { width: 100%; background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 10px; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+  .btn-full:hover { opacity: 0.82; }
+
+  /* App */
+  #app { display: none; }
+  .topbar { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 0 1.5rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .topbar-left { display: flex; flex-direction: column; }
+  .topbar-title { font-size: 16px; font-weight: 500; }
+  .topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .btn-logout { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 6px 12px; cursor: pointer; font-size: 12px; color: var(--text2); transition: all 0.15s; }
+  .btn-logout:hover { background: var(--bg2); color: var(--text); }
+  .container { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem; }
+  .toolbar { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
+  .toolbar input[type=text] { flex: 1; min-width: 200px; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 14px; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; }
+  .toolbar input[type=text]:focus { border-color: var(--info-text); }
+  .toolbar select { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 12px; font-size: 14px; color: var(--text); outline: none; cursor: pointer; }
+  .badge { font-size: 12px; padding: 4px 12px; border-radius: var(--radius); background: var(--info-bg); color: var(--info-text); font-weight: 500; white-space: nowrap; }
+  .btn-new { background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: opacity 0.15s; }
+  .btn-new:hover { opacity: 0.82; }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
+  thead th { text-align: left; font-size: 11px; font-weight: 500; color: var(--text2); padding: 10px 14px; border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
+  thead th:nth-child(1) { width: 32%; }
+  thead th:nth-child(2) { width: 18%; }
+  thead th:nth-child(3) { width: 22%; }
+  thead th:nth-child(4) { width: 16%; }
+  thead th:nth-child(5) { width: 12%; text-align: center; }
+  tbody tr { border-bottom: 0.5px solid var(--border); transition: background 0.12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg2); }
+  tbody td { padding: 11px 14px; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  tbody td:last-child { text-align: center; overflow: visible; }
+  .cat-pill { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500; }
+  .actions { display: flex; gap: 6px; justify-content: center; }
+  .btn-icon { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 5px 9px; cursor: pointer; font-size: 13px; color: var(--text2); transition: all 0.15s; line-height: 1; }
+  .btn-icon:hover { background: var(--bg2); color: var(--text); }
+  .btn-icon.del:hover { border-color: var(--danger-text); color: var(--danger-text); background: var(--danger-bg); }
+  .empty { text-align: center; padding: 3rem; color: var(--text2); font-size: 14px; }
+
+  /* Modal */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 50; align-items: center; justify-content: center; padding: 1rem; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); padding: 1.5rem; width: 100%; max-width: 400px; }
+  .modal h3 { font-size: 16px; font-weight: 500; margin-bottom: 1.2rem; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.2rem; }
+  .btn-cancel { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--text2); }
+  .btn-cancel:hover { background: var(--bg2); }
+  .btn-save { background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 8px 18px; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity 0.15s; }
+  .btn-save:hover { opacity: 0.82; }
+  .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  .dot-ok { background: #63b940; }
+  .dot-load { background: #ef9f27; animation: pulse 1s infinite; }
+  .dot-err { background: #e24b4a; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 600px) {
+    thead th:nth-child(2), tbody td:nth-child(2) { display: none; }
+    thead th:nth-child(1) { width: 40%; }
+    thead th:nth-child(3) { width: 28%; }
+    thead th:nth-child(4) { width: 18%; }
+    thead th:nth-child(5) { width: 14%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login">
+  <div class="login-box">
+    <h2>Área de manutenção</h2>
+    <p>Digite a senha para acessar o gerenciamento de procedimentos.</p>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <div class="err-msg" id="err-msg">Senha incorreta. Tente novamente.</div>
+    <button class="btn-full" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">Manutenção de Procedimentos</div>
+      <div class="topbar-sub" id="status-label"><span class="status-dot dot-load"></span>Conectando...</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-new" onclick="openModal()">+ Novo procedimento</button>
+      <button class="btn-logout" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="toolbar">
+      <input type="text" id="search" placeholder="Buscar procedimento, clínica ou telefone..." oninput="render()" />
+      <select id="filterCat" onchange="render()">
+        <option value="">Todas as categorias</option>
+      </select>
+      <span class="badge" id="count">—</span>
+    </div>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Procedimento</th>
+            <th>Categoria</th>
+            <th>Clínica</th>
+            <th>Telefone</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="5"><div class="empty">Carregando...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="modal-title">Novo procedimento</h3>
+    <div class="field"><label>Procedimento *</label><input type="text" id="f-proc" placeholder="Ex: RM de Coluna" /></div>
+    <div class="field"><label>Categoria</label><input type="text" id="f-cat" placeholder="Ex: Ressonância, Raio-X, Ultrassom..." /></div>
+    <div class="field"><label>Clínica *</label><input type="text" id="f-clinic" placeholder="Ex: Clínica RCC" /></div>
+    <div class="field"><label>Telefone</label><input type="text" id="f-tel" placeholder="Ex: (19) 99999-9999" /></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" id="btn-save" onclick="save()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ==============================
+// ALTERE A SENHA AQUI
+const SENHA = "clinica2701";
+// ==============================
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVkYMXaO1sWKEG6jh1-7flgRuUtxPf5sc",
+  authDomain: "clinica-procedimento.firebaseapp.com",
+  projectId: "clinica-procedimento",
+  storageBucket: "clinica-procedimento.firebasestorage.app",
+  messagingSenderId: "34683100986",
+  appId: "1:34683100986:web:e8ac5d73e483a3073f7a03"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const colRef = collection(db, "procedimentos");
+
+let DATA = [];
+let editId = null;
+let unsubscribe = null;
+
+const catColors = {};
+const palette = [
+  ['#e6f1fb','#185fa5'],['#eaf3de','#3b6d11'],['#faeeda','#854f0b'],
+  ['#faece7','#993c1d'],['#eeedfe','#534ab7'],['#e1f5ee','#0f6e56'],
+  ['#fbeaf0','#993556'],['#ebebea','#5f5e5a']
+];
+let palIdx = 0;
+function catColor(cat) {
+  if (!catColors[cat]) { catColors[cat] = palette[palIdx % palette.length]; palIdx++; }
+  return catColors[cat];
+}
+
+function setStatus(state) {
+  const el = document.getElementById('status-label');
+  if (state === 'ok') el.innerHTML = '<span class="status-dot dot-ok"></span>Sincronizado com a nuvem';
+  else if (state === 'err') el.innerHTML = '<span class="status-dot dot-err"></span>Erro de conexão';
+  else el.innerHTML = '<span class="status-dot dot-load"></span>Conectando...';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const cf = document.getElementById('filterCat').value;
+
+  const cats = [...new Set(DATA.map(d => d.cat).filter(Boolean))].sort();
+  const sel = document.getElementById('filterCat');
+  const curVal = sel.value;
+  sel.innerHTML = '<option value="">Todas as categorias</option>' +
+    cats.map(c => `<option value="${c}"${c===curVal?' selected':''}>${c}</option>`).join('');
+
+  const filtered = DATA.filter(d => {
+    const matchQ = !q || [d.proc, d.clinic, d.tel, d.cat].join(' ').toLowerCase().includes(q);
+    const matchC = !cf || d.cat === cf;
+    return matchQ && matchC;
+  });
+
+  document.getElementById('count').textContent =
+    filtered.length + ' procedimento' + (filtered.length !== 1 ? 's' : '');
+
+  const tb = document.getElementById('tbody');
+  if (filtered.length === 0) {
+    tb.innerHTML = `<tr><td colspan="5"><div class="empty">Nenhum procedimento encontrado</div></td></tr>`;
+    return;
+  }
+
+  tb.innerHTML = filtered.map(d => {
+    const [bg, fg] = d.cat ? catColor(d.cat) : ['#ebebea','#5f5e5a'];
+    const pill = d.cat
+      ? `<span class="cat-pill" style="background:${bg};color:${fg}">${d.cat}</span>`
+      : '<span style="color:var(--text2);font-size:13px">—</span>';
+    const proc = d.proc.replace(/'/g, "\\'");
+    return `<tr>
+      <td title="${d.proc}">${d.proc}</td>
+      <td>${pill}</td>
+      <td title="${d.clinic}">${d.clinic}</td>
+      <td title="${d.tel||''}">${d.tel || '—'}</td>
+      <td>
+        <div class="actions">
+          <button class="btn-icon" onclick="window._edit('${d.id}')" title="Editar">✏️</button>
+          <button class="btn-icon del" onclick="window._del('${d.id}','${proc}')" title="Excluir">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.doLogin = function() {
+  const val = document.getElementById('pwd').value;
+  if (val === SENHA) {
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('err-msg').classList.remove('show');
+    startFirestore();
+  } else {
+    document.getElementById('err-msg').classList.add('show');
+    document.getElementById('pwd').value = '';
+    document.getElementById('pwd').focus();
+  }
+};
+
+window.doLogout = function() {
+  if (unsubscribe) unsubscribe();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('pwd').value = '';
+  DATA = [];
+};
+
+function startFirestore() {
+  const q = query(colRef, orderBy('createdAt', 'asc'));
+  unsubscribe = onSnapshot(q, snap => {
+    DATA = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    setStatus('ok');
+    render();
+  }, () => setStatus('err'));
+}
+
+window._edit = function(id) {
+  const d = DATA.find(x => x.id === id);
+  if (!d) return;
+  editId = id;
+  document.getElementById('modal-title').textContent = 'Editar procedimento';
+  document.getElementById('f-proc').value = d.proc || '';
+  document.getElementById('f-cat').value = d.cat || '';
+  document.getElementById('f-clinic').value = d.clinic || '';
+  document.getElementById('f-tel').value = d.tel || '';
+  document.getElementById('overlay').classList.add('open');
+};
+
+window._del = async function(id, nome) {
+  if (!confirm(`Excluir "${nome}"?`)) return;
+  try {
+    await deleteDoc(doc(db, "procedimentos", id));
+    showToast('Procedimento excluído');
+  } catch(e) { alert('Erro ao excluir: ' + e.message); }
+};
+
+window.openModal = function() {
+  editId = null;
+  document.getElementById('modal-title').textContent = 'Novo procedimento';
+  ['f-proc','f-cat','f-clinic','f-tel'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('f-proc').focus(), 100);
+};
+
+window.closeModal = function() {
+  document.getElementById('overlay').classList.remove('open');
+  editId = null;
+};
+
+window.save = async function() {
+  const proc = document.getElementById('f-proc').value.trim();
+  const cat = document.getElementById('f-cat').value.trim();
+  const clinic = document.getElementById('f-clinic').value.trim();
+  const tel = document.getElementById('f-tel').value.trim();
+  if (!proc || !clinic) { alert('Preencha ao menos o procedimento e a clínica.'); return; }
+
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  try {
+    if (editId) {
+      await updateDoc(doc(db, "procedimentos", editId), { proc, cat, clinic, tel, updatedAt: serverTimestamp() });
+      showToast('Procedimento atualizado');
+    } else {
+      await addDoc(colRef, { proc, cat, clinic, tel, createdAt: serverTimestamp() });
+      showToast('Procedimento adicionado');
+    }
+    closeModal();
+  } catch(e) { alert('Erro ao salvar: ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Salvar'; }
+};
+
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay')) closeModal();
+});
+</script>
+</body>
+</html>

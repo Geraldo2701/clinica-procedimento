@@ -7,37 +7,18 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #ffffff;
-    --bg2: #f5f5f3;
-    --bg3: #ebebea;
-    --text: #1a1a18;
-    --text2: #6b6b67;
-    --border: rgba(0,0,0,0.12);
-    --border2: rgba(0,0,0,0.22);
-    --info-bg: #e6f1fb;
-    --info-text: #185fa5;
-    --danger-bg: #fcebeb;
-    --danger-text: #a32d2d;
-    --success-bg: #eaf3de;
-    --success-text: #3b6d11;
-    --radius: 8px;
-    --radius-lg: 12px;
+    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #ebebea;
+    --text: #1a1a18; --text2: #6b6b67;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --info-bg: #e6f1fb; --info-text: #185fa5;
+    --radius: 8px; --radius-lg: 12px;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #1c1c1a;
-      --bg2: #252523;
-      --bg3: #2e2e2c;
-      --text: #f0efeb;
-      --text2: #9a9a94;
-      --border: rgba(255,255,255,0.1);
-      --border2: rgba(255,255,255,0.2);
-      --info-bg: #0c2a45;
-      --info-text: #85b7eb;
-      --danger-bg: #3a1414;
-      --danger-text: #f09595;
-      --success-bg: #162408;
-      --success-text: #97c459;
+      --bg: #1c1c1a; --bg2: #252523; --bg3: #2e2e2c;
+      --text: #f0efeb; --text2: #9a9a94;
+      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
+      --info-bg: #0c2a45; --info-text: #85b7eb;
     }
   }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
@@ -46,61 +27,33 @@
   .topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
   .container { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem; }
   .toolbar { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
-  .toolbar input { flex: 1; min-width: 180px; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 12px; font-size: 14px; color: var(--text); outline: none; }
+  .toolbar input { flex: 1; min-width: 200px; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 14px; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; }
   .toolbar input:focus { border-color: var(--info-text); }
-  .toolbar select { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 12px; font-size: 14px; color: var(--text); outline: none; cursor: pointer; }
+  .toolbar select { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 12px; font-size: 14px; color: var(--text); outline: none; cursor: pointer; }
   .badge { font-size: 12px; padding: 4px 12px; border-radius: var(--radius); background: var(--info-bg); color: var(--info-text); font-weight: 500; white-space: nowrap; }
-  .btn-new { background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: opacity 0.15s; }
-  .btn-new:hover { opacity: 0.82; }
   .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
   thead th { text-align: left; font-size: 11px; font-weight: 500; color: var(--text2); padding: 10px 14px; border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
-  thead th:nth-child(1) { width: 33%; }
+  thead th:nth-child(1) { width: 38%; }
   thead th:nth-child(2) { width: 22%; }
-  thead th:nth-child(3) { width: 20%; }
-  thead th:nth-child(4) { width: 14%; }
-  thead th:nth-child(5) { width: 11%; text-align: center; }
+  thead th:nth-child(3) { width: 25%; }
+  thead th:nth-child(4) { width: 15%; }
   tbody tr { border-bottom: 0.5px solid var(--border); transition: background 0.12s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: var(--bg2); }
   tbody td { padding: 11px 14px; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  tbody td:last-child { text-align: center; overflow: visible; }
   .cat-pill { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500; }
-  .actions { display: flex; gap: 6px; justify-content: center; }
-  .btn-icon { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 5px 9px; cursor: pointer; font-size: 13px; color: var(--text2); transition: all 0.15s; line-height: 1; }
-  .btn-icon:hover { background: var(--bg2); color: var(--text); }
-  .btn-icon.del:hover { border-color: var(--danger-text); color: var(--danger-text); background: var(--danger-bg); }
   .empty { text-align: center; padding: 3rem; color: var(--text2); font-size: 14px; }
-  .loading { text-align: center; padding: 3rem; color: var(--text2); font-size: 14px; }
   .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
   .dot-ok { background: #63b940; }
-  .dot-err { background: #e24b4a; }
   .dot-load { background: #ef9f27; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-  /* Modal */
-  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 50; align-items: center; justify-content: center; padding: 1rem; }
-  .overlay.open { display: flex; }
-  .modal { background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); padding: 1.5rem; width: 100%; max-width: 400px; }
-  .modal h3 { font-size: 16px; font-weight: 500; margin-bottom: 1.2rem; }
-  .field { margin-bottom: 12px; }
-  .field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 4px; }
-  .field input { width: 100%; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 12px; font-size: 14px; color: var(--text); outline: none; }
-  .field input:focus { border-color: var(--info-text); }
-  .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.2rem; }
-  .btn-cancel { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--text2); }
-  .btn-cancel:hover { background: var(--bg2); }
-  .btn-save { background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 8px 18px; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity 0.15s; }
-  .btn-save:hover { opacity: 0.82; }
-  .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
-  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
-  .toast.show { opacity: 1; }
+  .dot-err { background: #e24b4a; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
   @media (max-width: 600px) {
     thead th:nth-child(2), tbody td:nth-child(2) { display: none; }
-    thead th:nth-child(4), tbody td:nth-child(4) { display: none; }
-    thead th:nth-child(1) { width: 50%; }
-    thead th:nth-child(3) { width: 30%; }
-    thead th:nth-child(5) { width: 20%; }
+    thead th:nth-child(1) { width: 45%; }
+    thead th:nth-child(3) { width: 35%; }
+    thead th:nth-child(4) { width: 20%; }
   }
 </style>
 </head>
@@ -109,9 +62,8 @@
 <div class="topbar">
   <div>
     <div class="topbar-title">Procedimentos da Clínica</div>
-    <div class="topbar-sub" id="status-label"><span class="status-dot dot-load" id="status-dot"></span>Conectando...</div>
+    <div class="topbar-sub" id="status-label"><span class="status-dot dot-load"></span>Carregando...</div>
   </div>
-  <button class="btn-new" onclick="openModal()">+ Novo procedimento</button>
 </div>
 
 <div class="container">
@@ -122,7 +74,6 @@
     </select>
     <span class="badge" id="count">—</span>
   </div>
-
   <div class="card">
     <table>
       <thead>
@@ -131,35 +82,18 @@
           <th>Categoria</th>
           <th>Clínica</th>
           <th>Telefone</th>
-          <th>Ações</th>
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr><td colspan="5"><div class="loading">Carregando dados...</div></td></tr>
+        <tr><td colspan="4"><div class="empty">Carregando...</div></td></tr>
       </tbody>
     </table>
   </div>
 </div>
 
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <h3 id="modal-title">Novo procedimento</h3>
-    <div class="field"><label>Procedimento *</label><input type="text" id="f-proc" placeholder="Ex: RM de Coluna" /></div>
-    <div class="field"><label>Categoria</label><input type="text" id="f-cat" placeholder="Ex: Ressonância, Raio-X, Ultrassom..." /></div>
-    <div class="field"><label>Clínica *</label><input type="text" id="f-clinic" placeholder="Ex: Clínica RCC" /></div>
-    <div class="field"><label>Telefone</label><input type="text" id="f-tel" placeholder="Ex: (19) 99999-9999" /></div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-      <button class="btn-save" id="btn-save" onclick="save()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVkYMXaO1sWKEG6jh1-7flgRuUtxPf5sc",
@@ -172,16 +106,13 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const colRef = collection(db, "procedimentos");
 
 let DATA = [];
-let editId = null;
-
 const catColors = {};
 const palette = [
-  ['#e6f1fb','#185fa5'], ['#eaf3de','#3b6d11'], ['#faeeda','#854f0b'],
-  ['#faece7','#993c1d'], ['#eeedfe','#534ab7'], ['#e1f5ee','#0f6e56'],
-  ['#fbeaf0','#993556'], ['#ebebea','#5f5e5a']
+  ['#e6f1fb','#185fa5'],['#eaf3de','#3b6d11'],['#faeeda','#854f0b'],
+  ['#faece7','#993c1d'],['#eeedfe','#534ab7'],['#e1f5ee','#0f6e56'],
+  ['#fbeaf0','#993556'],['#ebebea','#5f5e5a']
 ];
 let palIdx = 0;
 function catColor(cat) {
@@ -190,29 +121,14 @@ function catColor(cat) {
 }
 
 function setStatus(state) {
-  const dot = document.getElementById('status-dot');
-  const label = document.getElementById('status-label');
-  if (state === 'ok') {
-    dot.className = 'status-dot dot-ok';
-    label.innerHTML = '<span class="status-dot dot-ok"></span>Sincronizado com a nuvem';
-  } else if (state === 'err') {
-    dot.className = 'status-dot dot-err';
-    label.innerHTML = '<span class="status-dot dot-err"></span>Erro de conexão';
-  } else {
-    dot.className = 'status-dot dot-load';
-    label.innerHTML = '<span class="status-dot dot-load"></span>Conectando...';
-  }
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  const el = document.getElementById('status-label');
+  if (state === 'ok') el.innerHTML = '<span class="status-dot dot-ok"></span>Atualizado em tempo real';
+  else if (state === 'err') el.innerHTML = '<span class="status-dot dot-err"></span>Erro de conexão';
+  else el.innerHTML = '<span class="status-dot dot-load"></span>Carregando...';
 }
 
 function render() {
-  const q = document.getElementById('search').value.toLowerCase();
+  const q = document.getElementById('search').value.toLowerCase().trim();
   const cf = document.getElementById('filterCat').value;
 
   const cats = [...new Set(DATA.map(d => d.cat).filter(Boolean))].sort();
@@ -222,9 +138,9 @@ function render() {
     cats.map(c => `<option value="${c}"${c===curVal?' selected':''}>${c}</option>`).join('');
 
   const filtered = DATA.filter(d => {
-    const m = !q || [d.proc,d.clinic,d.tel,d.cat].join(' ').toLowerCase().includes(q);
-    const cm = !cf || d.cat === cf;
-    return m && cm;
+    const matchQ = !q || [d.proc, d.clinic, d.tel, d.cat].join(' ').toLowerCase().includes(q);
+    const matchC = !cf || d.cat === cf;
+    return matchQ && matchC;
   });
 
   document.getElementById('count').textContent =
@@ -232,7 +148,7 @@ function render() {
 
   const tb = document.getElementById('tbody');
   if (filtered.length === 0) {
-    tb.innerHTML = `<tr><td colspan="5"><div class="empty">Nenhum procedimento encontrado</div></td></tr>`;
+    tb.innerHTML = `<tr><td colspan="4"><div class="empty">Nenhum procedimento encontrado</div></td></tr>`;
     return;
   }
 
@@ -245,94 +161,17 @@ function render() {
       <td title="${d.proc}">${d.proc}</td>
       <td>${pill}</td>
       <td title="${d.clinic}">${d.clinic}</td>
-      <td title="${d.tel}">${d.tel || '—'}</td>
-      <td>
-        <div class="actions">
-          <button class="btn-icon" onclick="window._edit('${d.id}')" title="Editar">✏️</button>
-          <button class="btn-icon del" onclick="window._del('${d.id}','${d.proc.replace(/'/g,"\\'")}'')" title="Excluir">🗑</button>
-        </div>
-      </td>
+      <td title="${d.tel||''}">${d.tel || '—'}</td>
     </tr>`;
   }).join('');
 }
 
-window._edit = function(id) {
-  const d = DATA.find(x => x.id === id);
-  if (!d) return;
-  editId = id;
-  document.getElementById('modal-title').textContent = 'Editar procedimento';
-  document.getElementById('f-proc').value = d.proc || '';
-  document.getElementById('f-cat').value = d.cat || '';
-  document.getElementById('f-clinic').value = d.clinic || '';
-  document.getElementById('f-tel').value = d.tel || '';
-  document.getElementById('overlay').classList.add('open');
-};
-
-window._del = async function(id, nome) {
-  if (!confirm(`Excluir "${nome}"?`)) return;
-  try {
-    await deleteDoc(doc(db, "procedimentos", id));
-    showToast('Procedimento excluído');
-  } catch(e) { alert('Erro ao excluir: ' + e.message); }
-};
-
-window.openModal = function() {
-  editId = null;
-  document.getElementById('modal-title').textContent = 'Novo procedimento';
-  ['f-proc','f-cat','f-clinic','f-tel'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('overlay').classList.add('open');
-  setTimeout(() => document.getElementById('f-proc').focus(), 100);
-};
-
-window.closeModal = function() {
-  document.getElementById('overlay').classList.remove('open');
-  editId = null;
-};
-
-window.save = async function() {
-  const proc = document.getElementById('f-proc').value.trim();
-  const cat = document.getElementById('f-cat').value.trim();
-  const clinic = document.getElementById('f-clinic').value.trim();
-  const tel = document.getElementById('f-tel').value.trim();
-  if (!proc || !clinic) { alert('Preencha ao menos o procedimento e a clínica.'); return; }
-
-  const btn = document.getElementById('btn-save');
-  btn.disabled = true;
-  btn.textContent = 'Salvando...';
-
-  try {
-    if (editId) {
-      await updateDoc(doc(db, "procedimentos", editId), { proc, cat, clinic, tel, updatedAt: serverTimestamp() });
-      showToast('Procedimento atualizado');
-    } else {
-      await addDoc(colRef, { proc, cat, clinic, tel, createdAt: serverTimestamp() });
-      showToast('Procedimento adicionado');
-    }
-    closeModal();
-  } catch(e) {
-    alert('Erro ao salvar: ' + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Salvar';
-  }
-};
-
-document.getElementById('overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('overlay')) closeModal();
-});
-
-const q = query(colRef, orderBy('createdAt', 'asc'));
-onSnapshot(q,
-  snapshot => {
-    DATA = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-    setStatus('ok');
-    render();
-  },
-  err => {
-    console.error(err);
-    setStatus('err');
-  }
-);
+const q = query(collection(db, "procedimentos"), orderBy('createdAt', 'asc'));
+onSnapshot(q, snap => {
+  DATA = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  setStatus('ok');
+  render();
+}, () => setStatus('err'));
 </script>
 </body>
 </html>
