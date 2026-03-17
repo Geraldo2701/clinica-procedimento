@@ -287,7 +287,7 @@ function showToast(msg) {
 function render() {
   const q = document.getElementById('search').value.toLowerCase().trim();
   let filtered = DATA.filter(d =>
-    !q || [d.proc, d.clinic, d.tel, d.tuss, d.obs].join(' ').toLowerCase().includes(q)
+    !q || q.split(/\s+/).filter(Boolean).every(w => [d.proc, d.clinic, d.tel, d.tuss, d.obs].join(' ').toLowerCase().includes(w))
   );
   filtered.sort((a, b) => (a.proc || '').localeCompare(b.proc || '', 'pt-BR'));
 
