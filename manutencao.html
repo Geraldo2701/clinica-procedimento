@@ -522,6 +522,28 @@ window.confirmImport = async function() {
   }
 };
 
+window.zerarBase = async function() {
+  const total = DATA.length;
+  if (total === 0) { alert('A base já está vazia!'); return; }
+  const c1 = confirm('Atenção! Isso vai excluir TODOS os ' + total + ' procedimentos.\n\nTem certeza?');
+  if (!c1) return;
+  const c2 = confirm('Confirma a exclusão de toda a base? Esta ação não pode ser desfeita.');
+  if (!c2) return;
+  const btn = document.querySelector('.btn-danger');
+  btn.disabled = true; btn.textContent = 'Excluindo...';
+  try {
+    const snap = await getDocs(colRef);
+    const batch = writeBatch(db);
+    snap.docs.forEach(d => batch.delete(d.ref));
+    await batch.commit();
+    showToast(total + ' procedimento(s) excluído(s) com sucesso!');
+  } catch(e) {
+    alert('Erro ao zerar base: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '🗑 Zerar base';
+  }
+};
+
 document.getElementById('overlay-import').addEventListener('click', e => {
   if (e.target === document.getElementById('overlay-import')) closeImport();
 });
