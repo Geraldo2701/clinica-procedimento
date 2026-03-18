@@ -52,6 +52,8 @@
   .btn-new:hover { opacity: 0.82; }
   .btn-import { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 14px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; color: var(--text); transition: all 0.15s; }
   .btn-import:hover { background: var(--bg2); }
+  .btn-danger { background: none; border: 0.5px solid var(--danger-text); border-radius: var(--radius); padding: 7px 14px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; color: var(--danger-text); transition: all 0.15s; }
+  .btn-danger:hover { background: var(--danger-bg); }
 
   .container { max-width: 980px; margin: 0 auto; padding: 1.5rem 1rem; }
   .toolbar { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
@@ -154,6 +156,7 @@
       <div class="topbar-sub" id="status-label"><span class="status-dot dot-load"></span>Conectando...</div>
     </div>
     <div class="topbar-right">
+      <button class="btn-danger" onclick="window.zerarBase()">🗑 Zerar base</button>
       <button class="btn-import" onclick="openImport()">⬆ Importar Excel</button>
       <button class="btn-new" onclick="openModal()">+ Novo procedimento</button>
       <button class="btn-logout" onclick="doLogout()">Sair</button>
@@ -245,7 +248,7 @@ window.confirmImport=window._edit=window._del=function(){};
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, getDocs, writeBatch, doc, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ==============================
 // ALTERE A SENHA AQUI
