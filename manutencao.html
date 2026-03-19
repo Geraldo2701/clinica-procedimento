@@ -74,6 +74,7 @@
   tbody tr:hover { background: var(--bg2); }
   tbody td { padding: 11px 14px; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   tbody td:last-child { text-align: center; overflow: visible; }
+  tbody td.clinic-cell { white-space: normal; word-break: break-word; vertical-align: top; padding-top: 13px; }
   tbody td.obs-cell { white-space: pre-wrap; word-break: break-word; font-size: 13px; color: var(--text2); vertical-align: top; padding-top: 13px; }
   .tuss-code { font-family: monospace; font-size: 12px; background: var(--bg3); padding: 2px 7px; border-radius: var(--radius); color: var(--text2); }
   .actions { display: flex; gap: 6px; justify-content: center; }
@@ -308,7 +309,7 @@ window.render = function() {
     return `<tr>
       <td title="${d.proc}">${d.proc}</td>
       <td>${tuss}</td>
-      <td title="${d.clinic||''}">${d.clinic || '—'}</td>
+      <td class="clinic-cell" title="${d.clinic||''}">${d.clinic || '—'}</td>
       <td title="${d.tel||''}">${d.tel || '—'}</td>
       <td class="obs-cell">${d.obs || '—'}</td>
       <td><div class="actions">
