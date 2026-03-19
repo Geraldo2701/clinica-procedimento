@@ -75,6 +75,7 @@
   tbody td { padding: 11px 14px; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   tbody td:last-child { text-align: center; overflow: visible; }
   tbody td.clinic-cell { white-space: normal; word-break: break-word; vertical-align: top; padding-top: 13px; }
+  tbody td.proc-cell { white-space: normal; word-break: break-word; vertical-align: top; padding-top: 13px; font-weight: 500; }
   tbody td.obs-cell { white-space: pre-wrap; word-break: break-word; font-size: 13px; color: var(--text2); vertical-align: top; padding-top: 13px; }
   .tuss-code { font-family: monospace; font-size: 12px; background: var(--bg3); padding: 2px 7px; border-radius: var(--radius); color: var(--text2); }
   .actions { display: flex; gap: 6px; justify-content: center; }
@@ -307,7 +308,7 @@ window.render = function() {
     const tuss = d.tuss ? `<span class="tuss-code">${d.tuss}</span>` : '<span style="color:var(--text2)">—</span>';
     const proc = (d.proc || '').replace(/'/g, "\\'");
     return `<tr>
-      <td title="${d.proc}">${d.proc}</td>
+      <td class="proc-cell" title="${d.proc}">${d.proc}</td>
       <td>${tuss}</td>
       <td class="clinic-cell" title="${d.clinic||''}">${d.clinic || '—'}</td>
       <td title="${d.tel||''}">${d.tel || '—'}</td>
