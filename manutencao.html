@@ -63,11 +63,11 @@
   .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
   thead th { text-align: left; font-size: 11px; font-weight: 500; color: var(--text2); padding: 10px 14px; border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
-  thead th:nth-child(1) { width: 28%; }
-  thead th:nth-child(2) { width: 12%; }
+  thead th:nth-child(1) { width: 26%; }
+  thead th:nth-child(2) { width: 14%; }
   thead th:nth-child(3) { width: 22%; }
-  thead th:nth-child(4) { width: 14%; }
-  thead th:nth-child(5) { width: 24%; }
+  thead th:nth-child(4) { width: 16%; }
+  thead th:nth-child(5) { width: 22%; }
   thead th:nth-child(6) { width: 8%; text-align: center; }
   tbody tr { border-bottom: 0.5px solid var(--border); transition: background 0.12s; }
   tbody tr:last-child { border-bottom: none; }
@@ -84,6 +84,11 @@
   .btn-icon { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 5px 9px; cursor: pointer; font-size: 13px; color: var(--text2); transition: all 0.15s; line-height: 1; }
   .btn-icon:hover { background: var(--bg2); color: var(--text); }
   .btn-icon.del:hover { border-color: var(--danger-text); color: var(--danger-text); background: var(--danger-bg); }
+  .btn-icon.del.protected { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+  .lock-badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 20px; background: var(--warning-bg); color: var(--warning-text); font-weight: 500; margin-left: 6px; vertical-align: middle; }
+  .field-check { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .field-check label { font-size: 13px; color: var(--text); cursor: pointer; }
+  .field-check input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--info-text); }
   .empty { text-align: center; padding: 3rem; color: var(--text2); font-size: 14px; }
 
   /* Modal */
@@ -129,9 +134,9 @@
   @media (max-width: 640px) {
     thead th:nth-child(2), tbody td:nth-child(2),
     thead th:nth-child(5), tbody td:nth-child(5) { display: none; }
-    thead th:nth-child(1) { width: 28%; }
+    thead th:nth-child(1) { width: 26%; }
     thead th:nth-child(3) { width: 22%; }
-    thead th:nth-child(4) { width: 14%; }
+    thead th:nth-child(4) { width: 16%; }
     thead th:nth-child(6) { width: 14%; }
   }
 </style>
@@ -202,6 +207,7 @@
     <div class="field"><label>Clínica *</label><input type="text" id="f-clinic" placeholder="Ex: Clínica RCC" /></div>
     <div class="field"><label>Telefone</label><input type="text" id="f-tel" placeholder="Ex: (19) 99999-9999" /></div>
     <div class="field"><label>Observações</label><textarea id="f-obs" placeholder="Ex: Trazer pedido médico, jejum de 4h..."></textarea></div>
+    <div class="field-check"><input type="checkbox" id="f-protected" /><label for="f-protected">🔒 Protegido — não pode ser excluído</label></div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
       <button class="btn-save" id="btn-save" onclick="save()">Salvar</button>
@@ -311,7 +317,7 @@ window.render = function() {
     const tuss = d.tuss ? `<span class="tuss-code">${d.tuss}</span>` : '<span style="color:var(--text2)">—</span>';
     const proc = (d.proc || '').replace(/'/g, "\\'");
     return `<tr>
-      <td class="proc-cell" title="${d.proc}">${d.proc}</td>
+      <td class="proc-cell" title="${d.proc}">${d.proc}${d.protected ? '<span class="lock-badge">🔒 protegido</span>' : ''}</td>
       <td class="tuss-cell">${tuss}</td>
       <td class="clinic-cell" title="${d.clinic||''}">${d.clinic || '—'}</td>
       <td class="tel-cell" title="${d.tel||''}">${d.tel || '—'}</td>
@@ -367,10 +373,12 @@ window._edit = function(id) {
   document.getElementById('f-clinic').value = d.clinic || '';
   document.getElementById('f-tel').value = d.tel || '';
   document.getElementById('f-obs').value = d.obs || '';
+  document.getElementById('f-protected').checked = d.protected || false;
   document.getElementById('overlay').classList.add('open');
 };
 
-window._del = async function(id, nome) {
+window._del = async function(id, nome, prot) {
+  if (prot === 'true') { alert('Este procedimento está protegido e não pode ser excluído.\nEdite-o e desmarque "Protegido" para liberar a exclusão.'); return; }
   if (!confirm(`Excluir "${nome}"?`)) return;
   try {
     await deleteDoc(doc(db, "procedimentos", id));
@@ -382,6 +390,7 @@ window.openModal = function() {
   editId = null;
   document.getElementById('modal-title').textContent = 'Novo procedimento';
   ['f-proc','f-tuss','f-clinic','f-tel','f-obs'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-protected').checked = false;
   document.getElementById('overlay').classList.add('open');
   setTimeout(() => document.getElementById('f-proc').focus(), 100);
 };
@@ -397,15 +406,16 @@ window.save = async function() {
   const clinic = document.getElementById('f-clinic').value.trim();
   const tel = document.getElementById('f-tel').value.trim();
   const obs = document.getElementById('f-obs').value.trim();
+  const protected_ = document.getElementById('f-protected').checked;
   if (!proc || !clinic) { alert('Preencha ao menos o procedimento e a clínica.'); return; }
   const btn = document.getElementById('btn-save');
   btn.disabled = true; btn.textContent = 'Salvando...';
   try {
     if (editId) {
-      await updateDoc(doc(db, "procedimentos", editId), { proc, tuss, clinic, tel, obs, updatedAt: serverTimestamp() });
+      await updateDoc(doc(db, "procedimentos", editId), { proc, tuss, clinic, tel, obs, protected: protected_, updatedAt: serverTimestamp() });
       showToast('Procedimento atualizado');
     } else {
-      await addDoc(colRef, { proc, tuss, clinic, tel, obs, createdAt: serverTimestamp() });
+      await addDoc(colRef, { proc, tuss, clinic, tel, obs, protected: protected_, createdAt: serverTimestamp() });
       showToast('Procedimento adicionado');
     }
     closeModal();
