@@ -316,15 +316,19 @@ window.render = function() {
   tb.innerHTML = filtered.map(d => {
     const tuss = d.tuss ? `<span class="tuss-code">${d.tuss}</span>` : '<span style="color:var(--text2)">—</span>';
     const proc = (d.proc || '').replace(/'/g, "\\'");
+    const isProt = d.protected === true;
+    const delBtn = isProt
+      ? `<button class="btn-icon del protected" onclick="alert('Protegido. Edite e desmarque Protegido para poder excluir.')" title="Protegido">🗑</button>`
+      : `<button class="btn-icon del" onclick="window._del('${d.id}','${proc}')" title="Excluir">🗑</button>`;
     return `<tr>
-      <td class="proc-cell" title="${d.proc}">${d.proc}${d.protected ? '<span class="lock-badge">🔒 protegido</span>' : ''}</td>
+      <td class="proc-cell" title="${d.proc}">${d.proc}${isProt ? '<span class="lock-badge">🔒 protegido</span>' : ''}</td>
       <td class="tuss-cell">${tuss}</td>
       <td class="clinic-cell" title="${d.clinic||''}">${d.clinic || '—'}</td>
       <td class="tel-cell" title="${d.tel||''}">${d.tel || '—'}</td>
       <td class="obs-cell">${d.obs || '—'}</td>
       <td><div class="actions">
         <button class="btn-icon" onclick="window._edit('${d.id}')" title="Editar">✏️</button>
-        <button class="btn-icon del ${d.protected ? 'protected' : ''}" onclick="window._del('${d.id}','${proc}',${d.protected ? true : false})" title="${d.protected ? 'Protegido' : 'Excluir'}">🗑</button>
+        ${delBtn}
       </div></td>
     </tr>`;
   }).join('');
