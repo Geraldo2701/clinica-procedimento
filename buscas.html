@@ -263,10 +263,27 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- MODAL SENHA EXCLUSÃO -->
+<div class="overlay" id="overlay-del" style="z-index:70">
+  <div class="modal" style="max-width:340px">
+    <h3>Confirmar exclusão</h3>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;">Digite a senha de exclusão para continuar.</p>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="del-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')window.confirmDel()" />
+    </div>
+    <div class="err-msg" id="del-err" style="display:none;color:var(--danger-text);font-size:12px;margin-bottom:8px;">Senha incorreta.</div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="window.cancelDel()">Cancelar</button>
+      <button class="btn-save" onclick="window.confirmDel()">Excluir</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // Bridge: expose functions before module loads
 ['doLogin','doLogout','openModal','closeModal','openPanel','closePanel',
- 'editFromPanel','save','render','setFilter','_edit','_del'].forEach(fn => {
+ 'editFromPanel','save','render','setFilter','_edit','_del','cancelDel','confirmDel'].forEach(fn => {
   window[fn] = function() {
     console.warn(fn + ' not yet loaded');
   };
@@ -372,6 +389,7 @@ window.render = function() {
       <td>${fmt(d.dtfim)}</td>
       <td style="text-align:center">${statusPill}</td>
       <td style="text-align:center">${comercialIcon}</td>
+      <td style="text-align:center">${credencIcon}</td>
       <td onclick="event.stopPropagation()">
         <div class="actions">
           <button class="btn-icon" onclick="window._edit('${d.id}')" title="Editar">✏️</button>
@@ -461,12 +479,43 @@ window._edit = function(id) {
   document.getElementById('overlay').classList.add('open');
 };
 
-window._del = async function(id, nome) {
+let _delId = null;
+let _delNome = null;
+const SENHA_DEL = "deleta2701";
+
+window._del = function(id, nome) {
+  _delId = id;
+  _delNome = nome;
+  document.getElementById('del-pwd').value = '';
+  document.getElementById('del-err').style.display = 'none';
+  document.getElementById('overlay-del').classList.add('open');
+  setTimeout(() => document.getElementById('del-pwd').focus(), 100);
+};
+
+window.cancelDel = function() {
+  document.getElementById('overlay-del').classList.remove('open');
+  _delId = null; _delNome = null;
+};
+
+window.confirmDel = async function() {
+  const pwd = document.getElementById('del-pwd').value;
+  if (pwd !== SENHA_DEL) {
+    document.getElementById('del-err').style.display = 'block';
+    document.getElementById('del-pwd').value = '';
+    document.getElementById('del-pwd').focus();
+    return;
+  }
+  document.getElementById('overlay-del').classList.remove('open');
+
+window._delExec = async function(id, nome) {
   if (!confirm(`Excluir "${nome}"?`)) return;
   try {
     await deleteDoc(doc(db, "buscas", id));
     showToast('Busca excluída');
   } catch(e) { alert('Erro: ' + e.message); }
+};
+  await window._delExec(_delId, _delNome);
+  _delId = null; _delNome = null;
 };
 
 window.openModal = function() {
@@ -517,6 +566,9 @@ window.save = async function() {
 
 document.getElementById('overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('overlay')) window.closeModal();
+});
+document.getElementById('overlay-del').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay-del')) window.cancelDel();
 });
 document.getElementById('panel-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('panel-overlay')) window.closePanel();
