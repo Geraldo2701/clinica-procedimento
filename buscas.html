@@ -76,8 +76,9 @@
   thead th:nth-child(4) { width: 11%; }
   thead th:nth-child(5) { width: 11%; }
   thead th:nth-child(6) { width: 10%; text-align: center; }
-  thead th:nth-child(7) { width: 8%; text-align: center; }
-  thead th:nth-child(8) { width: 6%; text-align: center; }
+  thead th:nth-child(7) { width: 7%; text-align: center; }
+  thead th:nth-child(8) { width: 7%; text-align: center; }
+  thead th:nth-child(9) { width: 6%; text-align: center; }
   tbody tr { border-bottom: 0.5px solid var(--border); transition: background 0.12s; cursor: pointer; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: var(--bg2); }
@@ -189,6 +190,7 @@
             <th>Data Final</th>
             <th>Status</th>
             <th>Comercial</th>
+            <th>Credenc.</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -215,6 +217,7 @@
       <div class="panel-row"><span class="panel-label">Data Final</span><span class="panel-value" id="panel-dtfim">—</span></div>
       <div class="panel-row"><span class="panel-label">Status</span><span class="panel-value" id="panel-status">—</span></div>
       <div class="panel-row"><span class="panel-label">Comercial viu</span><span class="panel-value" id="panel-comercial">—</span></div>
+      <div class="panel-row"><span class="panel-label">Credenciamento viu</span><span class="panel-value" id="panel-credenc">—</span></div>
     </div>
     <div class="panel-section">
       <h4>Observações</h4>
@@ -248,6 +251,7 @@
       </select>
     </div>
     <div class="field-check"><input type="checkbox" id="f-comercial" /><label for="f-comercial">✅ Comercial já viu esta busca</label></div>
+    <div class="field-check"><input type="checkbox" id="f-credenc" /><label for="f-credenc">✅ Credenciamento já viu esta busca</label></div>
     <div class="field"><label>Observações</label><textarea id="f-obs" placeholder="Detalhes da busca..."></textarea></div>
     <div class="field"><label>Resolução Comercial</label><textarea id="f-resolucao" placeholder="Resultado / encaminhamento do comercial..."></textarea></div>
     <div class="modal-footer">
@@ -259,6 +263,15 @@
 
 <div class="toast" id="toast"></div>
 
+<script>
+// Bridge: expose functions before module loads
+['doLogin','doLogout','openModal','closeModal','openPanel','closePanel',
+ 'editFromPanel','save','render','setFilter','_edit','_del'].forEach(fn => {
+  window[fn] = function() {
+    console.warn(fn + ' not yet loaded');
+  };
+});
+</script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -339,7 +352,7 @@ window.render = function() {
 
   const tb = document.getElementById('tbody');
   if (filtered.length === 0) {
-    tb.innerHTML = `<tr><td colspan="8"><div class="empty">Nenhuma busca encontrada</div></td></tr>`;
+    tb.innerHTML = `<tr><td colspan="9"><div class="empty">Nenhuma busca encontrada</div></td></tr>`;
     return;
   }
 
@@ -349,6 +362,7 @@ window.render = function() {
       ? `<span class="status-pill status-open">Aberta</span>`
       : `<span class="status-pill status-closed">Fechada</span>`;
     const comercialIcon = d.comercial ? `<span class="comercial-seen" title="Comercial já viu">✅</span>` : `<span class="comercial-unseen" title="Comercial não viu">○</span>`;
+    const credencIcon = d.credenc ? `<span class="comercial-seen" title="Credenciamento já viu">✅</span>` : `<span class="comercial-unseen" title="Credenciamento não viu">○</span>`;
     const proc = (d.proc||'').replace(/'/g,"\'");
     return `<tr onclick="window.openPanel('${d.id}')">
       <td class="wrap-cell" title="${d.proc}">${d.proc||'—'}</td>
@@ -382,6 +396,7 @@ window.openPanel = function(id) {
     ? '<span class="status-pill status-open">Aberta</span>'
     : '<span class="status-pill status-closed">Fechada</span>';
   document.getElementById('panel-comercial').textContent = d.comercial ? '✅ Sim' : '○ Não';
+  document.getElementById('panel-credenc').textContent = d.credenc ? '✅ Sim' : '○ Não';
   document.getElementById('panel-obs').textContent = d.obs || '—';
   document.getElementById('panel-resolucao').textContent = d.resolucao || '—';
   document.getElementById('panel-overlay').classList.add('open');
@@ -440,6 +455,7 @@ window._edit = function(id) {
   document.getElementById('f-dtfim').value = d.dtfim || '';
   document.getElementById('f-status').value = d.status || 'aberta';
   document.getElementById('f-comercial').checked = d.comercial || false;
+  document.getElementById('f-credenc').checked = d.credenc || false;
   document.getElementById('f-obs').value = d.obs || '';
   document.getElementById('f-resolucao').value = d.resolucao || '';
   document.getElementById('overlay').classList.add('open');
@@ -459,6 +475,7 @@ window.openModal = function() {
   ['f-proc','f-prestador','f-espec','f-dtini','f-dtfim','f-obs','f-resolucao'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-status').value = 'aberta';
   document.getElementById('f-comercial').checked = false;
+  document.getElementById('f-credenc').checked = false;
   document.getElementById('overlay').classList.add('open');
   setTimeout(() => document.getElementById('f-proc').focus(), 100);
 };
@@ -481,6 +498,7 @@ window.save = async function() {
     dtfim: document.getElementById('f-dtfim').value,
     status: document.getElementById('f-status').value,
     comercial: document.getElementById('f-comercial').checked,
+    credenc: document.getElementById('f-credenc').checked,
     obs: document.getElementById('f-obs').value.trim(),
     resolucao: document.getElementById('f-resolucao').value.trim(),
   };
