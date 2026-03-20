@@ -254,7 +254,7 @@
 <script>
 window.doLogin=window.doLogout=window.openModal=window.closeModal=window.save=function(){};
 window.openImport=window.closeImport=window.handleDrop=window.handleFile=function(){};
-window.confirmImport=window._edit=window._del=function(){};
+window.confirmImport=window._edit=function(){};
 </script>
 
 <script type="module">
@@ -324,7 +324,7 @@ window.render = function() {
       <td class="obs-cell">${d.obs || '—'}</td>
       <td><div class="actions">
         <button class="btn-icon" onclick="window._edit('${d.id}')" title="Editar">✏️</button>
-        <button class="btn-icon del" onclick="window._del('${d.id}','${proc}')" title="Excluir">🗑</button>
+        <button class="btn-icon del ${d.protected ? 'protected' : ''}" onclick="window._del('${d.id}','${proc}',${d.protected ? true : false})" title="${d.protected ? 'Protegido' : 'Excluir'}">🗑</button>
       </div></td>
     </tr>`;
   }).join('');
