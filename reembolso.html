@@ -258,7 +258,10 @@
     </div>
     <div class="panel-section" id="panel-pdf-section" style="display:none">
       <h4>Documento anexado</h4>
-      <button class="btn-view-pdf" onclick="window.viewPdf()">📄 Visualizar PDF</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-view-pdf" onclick="window.viewPdf()">📄 Visualizar PDF</button>
+        <button class="btn-view-pdf" onclick="window.downloadPdf()" style="background:var(--success-bg);color:var(--success-text)">⬇️ Baixar PDF</button>
+      </div>
       <button class="btn-cancel" style="margin-top:8px;width:100%" onclick="window.removePdf()">🗑 Remover PDF</button>
     </div>
     <div class="panel-footer">
@@ -335,7 +338,7 @@
 <script>
 ['doLogin','doLogout','openModal','closeModal','openPanel','closePanel',
  'editFromPanel','save','render','setFilter','_edit','_del',
- 'cancelDel','confirmDel'].forEach(fn => {
+ 'cancelDel','confirmDel','downloadPdf'].forEach(fn => {
   window[fn] = function() { console.warn(fn + ' not yet loaded'); };
 });
 </script>
@@ -505,6 +508,22 @@ window.viewPdf = function() {
   window.open(url, '_blank');
 };
 
+window.downloadPdf = function() {
+  const d = DATA.find(x => x.id === currentPanelId);
+  if (!d || !d.pdfBase64) return;
+  const byteStr = atob(d.pdfBase64);
+  const ab = new ArrayBuffer(byteStr.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+  const blob = new Blob([ab], {type: 'application/pdf'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = d.pdfName || 'documento.pdf';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 window.printRecord = function() {
   const d = DATA.find(x => x.id === currentPanelId);
   if (!d) return;
@@ -534,8 +553,8 @@ window.printRecord = function() {
 window.handlePdf = function(input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 1024 * 1024 * 2) {
-    alert('PDF muito grande. Máximo 2MB.');
+  if (file.size > 1024 * 700) {
+    alert('PDF muito grande (' + (file.size/1024).toFixed(0) + 'KB).\nO limite é 700KB devido ao banco de dados gratuito.\nTente comprimir o PDF antes de anexar.');
     input.value = '';
     return;
   }

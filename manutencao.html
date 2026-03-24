@@ -544,18 +544,26 @@ window.confirmImport = async function() {
 window.zerarBase = async function() {
   const total = DATA.length;
   if (total === 0) { alert('A base já está vazia!'); return; }
-  const c1 = confirm('Atenção! Isso vai excluir TODOS os ' + total + ' procedimentos.\n\nTem certeza?');
+  const protegidos = DATA.filter(d => d.protected === true).length;
+  const paraExcluir = total - protegidos;
+  if (paraExcluir === 0) { alert('Todos os ' + protegidos + ' procedimento(s) estão protegidos e não podem ser excluídos.'); return; }
+  const msg = protegidos > 0
+    ? 'Atenção! Isso vai excluir ' + paraExcluir + ' procedimento(s).\n' + protegidos + ' protegido(s) serão mantidos.\n\nTem certeza?'
+    : 'Atenção! Isso vai excluir TODOS os ' + total + ' procedimentos.\n\nTem certeza?';
+  const c1 = confirm(msg);
   if (!c1) return;
-  const c2 = confirm('Confirma a exclusão de toda a base? Esta ação não pode ser desfeita.');
+  const c2 = confirm('Confirma a exclusão? Esta ação não pode ser desfeita.');
   if (!c2) return;
   const btn = document.querySelector('.btn-danger');
   btn.disabled = true; btn.textContent = 'Excluindo...';
   try {
     const snap = await getDocs(colRef);
     const batch = writeBatch(db);
-    snap.docs.forEach(d => batch.delete(d.ref));
+    snap.docs.forEach(d => {
+      if (d.data().protected !== true) batch.delete(d.ref);
+    });
     await batch.commit();
-    showToast(total + ' procedimento(s) excluído(s) com sucesso!');
+    showToast(paraExcluir + ' procedimento(s) excluído(s). ' + (protegidos > 0 ? protegidos + ' protegido(s) mantido(s).' : ''));
   } catch(e) {
     alert('Erro ao zerar base: ' + e.message);
   } finally {
