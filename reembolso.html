@@ -712,15 +712,10 @@ window.sendEmail = function() {
   const valor = d.vlaprov ? 'R$ ' + Number(d.vlaprov).toLocaleString('pt-BR', {minimumFractionDigits:2}) : '—';
   const subject = encodeURIComponent('Reembolso PSC Saúde — ' + (d.proc||'Procedimento'));
   const body = encodeURIComponent(
-    'Olá ' + (d.benef||'') + ',
-
-' +
+    'Olá ' + (d.benef||'') + ',\n\n' +
     'Seu reembolso referente a ' + (d.proc||'o procedimento solicitado') +
-    ' no valor de ' + valor + ' será pago em ' + dtpag + '.
-
-' +
-    'Atenciosamente,
-PSC Saúde'
+    ' no valor de ' + valor + ' será pago em ' + dtpag + '.\n\n' +
+    'Atenciosamente,\nPSC Saúde'
   );
   window.open('mailto:' + d.email + '?subject=' + subject + '&body=' + body);
 };
