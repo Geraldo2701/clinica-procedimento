@@ -115,6 +115,10 @@
   .panel-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: auto; padding-top: 1rem; border-top: 0.5px solid var(--border); flex-wrap: wrap; }
   .btn-print { background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--text); transition: all 0.15s; }
   .btn-print:hover { background: var(--bg2); }
+  .btn-whatsapp { background: #25D366; border: none; border-radius: var(--radius); padding: 8px 14px; cursor: pointer; font-size: 13px; color: #fff; font-weight: 500; transition: opacity 0.15s; }
+  .btn-whatsapp:hover { opacity: 0.85; }
+  .btn-email { background: var(--info-bg); border: none; border-radius: var(--radius); padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--info-text); font-weight: 500; transition: opacity 0.15s; }
+  .btn-email:hover { opacity: 0.85; }
   .btn-view-pdf { background: var(--info-bg); border: none; border-radius: var(--radius); padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--info-text); font-weight: 500; transition: opacity 0.15s; }
   .btn-view-pdf:hover { opacity: 0.82; }
 
@@ -266,6 +270,13 @@
       </div>
       <button class="btn-cancel" style="margin-top:8px;width:100%" onclick="window.removePdf()">🗑 Remover PDF</button>
     </div>
+    <div class="panel-section" id="panel-notify-section" style="display:none">
+      <h4>Notificar beneficiário</h4>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:0.5rem">
+        <button class="btn-whatsapp" onclick="window.sendWhatsapp()">📱 WhatsApp</button>
+        <button class="btn-email" onclick="window.sendEmail()">✉️ E-mail</button>
+      </div>
+    </div>
     <div class="panel-footer">
       <button class="btn-print" onclick="window.printRecord()">🖨️ Imprimir</button>
       <button class="btn-cancel" onclick="window.closePanel()">Fechar</button>
@@ -344,7 +355,7 @@
 <script>
 ['doLogin','doLogout','openModal','closeModal','openPanel','closePanel',
  'editFromPanel','save','render','setFilter','_edit','_del',
- 'cancelDel','confirmDel','downloadPdf'].forEach(fn => {
+ 'cancelDel','confirmDel','downloadPdf','sendWhatsapp','sendEmail'].forEach(fn => {
   window[fn] = function() { console.warn(fn + ' not yet loaded'); };
 });
 </script>
@@ -490,6 +501,8 @@ window.openPanel = function(id) {
   document.getElementById('panel-obs').textContent = d.obs || '—';
   document.getElementById('panel-resolucao').textContent = d.resolucao || '—';
   document.getElementById('panel-pdf-section').style.display = d.pdfBase64 ? 'block' : 'none';
+  const canNotify = d.fin === true && d.dtpag;
+  document.getElementById('panel-notify-section').style.display = canNotify ? 'block' : 'none';
   document.getElementById('panel-overlay').classList.add('open');
 };
 
@@ -675,6 +688,41 @@ window.openModal = function() {
   document.getElementById('btn-remove-pdf').style.display = 'none';
   document.getElementById('overlay').classList.add('open');
   setTimeout(() => document.getElementById('f-benef').focus(), 100);
+};
+
+window.sendWhatsapp = function() {
+  const d = DATA.find(x => x.id === currentPanelId);
+  if (!d) return;
+  const dtpag = d.dtpag ? d.dtpag.split('-').reverse().join('/') : '—';
+  const valor = d.vlaprov ? 'R$ ' + Number(d.vlaprov).toLocaleString('pt-BR', {minimumFractionDigits:2}) : '—';
+  const msg = encodeURIComponent(
+    'Olá ' + (d.benef||'') + ', seu reembolso referente a ' + (d.proc||'o procedimento solicitado') +
+    ' no valor de ' + valor + ' será pago em ' + dtpag + '. PSC Saúde.'
+  );
+  const tel = (d.tel||'').replace(/\D/g,'');
+  if (!tel) { alert('Telefone não cadastrado para este beneficiário.'); return; }
+  window.open('https://wa.me/55' + tel + '?text=' + msg, '_blank');
+};
+
+window.sendEmail = function() {
+  const d = DATA.find(x => x.id === currentPanelId);
+  if (!d) return;
+  if (!d.email) { alert('E-mail não cadastrado para este beneficiário.'); return; }
+  const dtpag = d.dtpag ? d.dtpag.split('-').reverse().join('/') : '—';
+  const valor = d.vlaprov ? 'R$ ' + Number(d.vlaprov).toLocaleString('pt-BR', {minimumFractionDigits:2}) : '—';
+  const subject = encodeURIComponent('Reembolso PSC Saúde — ' + (d.proc||'Procedimento'));
+  const body = encodeURIComponent(
+    'Olá ' + (d.benef||'') + ',
+
+' +
+    'Seu reembolso referente a ' + (d.proc||'o procedimento solicitado') +
+    ' no valor de ' + valor + ' será pago em ' + dtpag + '.
+
+' +
+    'Atenciosamente,
+PSC Saúde'
+  );
+  window.open('mailto:' + d.email + '?subject=' + subject + '&body=' + body);
 };
 
 window.removePdf = async function() {
