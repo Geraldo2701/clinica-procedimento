@@ -456,7 +456,7 @@ window.render = function() {
     const admIcon = d.adm ? '<span class="flag-yes" title="ADM viu">✅</span>' : '<span class="flag-no">○</span>';
     const finIcon = d.fin ? '<span class="flag-yes" title="Financeiro viu">✅</span>' : '<span class="flag-no">○</span>';
     const id = d.id;
-    const benef = (d.benef||'').replace(/'/g, "\'");
+    const benef = (d.benef||"").replace(/'/g, "");
     let row = '<tr onclick="window.openPanel(\'' + id + '\')">';
     row += '<td class="wrap-cell">' + (d.benef||'—') + '</td>';
     row += '<td>' + (d.proc||'—') + '</td>';
