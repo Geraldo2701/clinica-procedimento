@@ -127,6 +127,13 @@
   .field-check label { font-size: 13px; color: var(--text); cursor: pointer; }
   .field-check input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--info-text); }
 
+  .btn-view-pdf { background: var(--info-bg); border: none; border-radius: var(--radius); padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--info-text); font-weight: 500; transition: opacity 0.15s; }
+  .btn-view-pdf:hover { opacity: 0.82; }
+  .btn-download-pdf { background: var(--success-bg); border: none; border-radius: var(--radius); padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--success-text); font-weight: 500; transition: opacity 0.15s; }
+  .btn-download-pdf:hover { opacity: 0.82; }
+  .upload-area { border: 1.5px dashed var(--border2); border-radius: var(--radius); padding: 1rem; text-align: center; cursor: pointer; transition: all 0.15s; }
+  .upload-area:hover { border-color: var(--info-text); background: var(--info-bg); }
+  .upload-area p { font-size: 13px; color: var(--text2); margin-top: 4px; }
   .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
   .dot-ok { background: #63b940; }
   .dot-load { background: #ef9f27; animation: pulse 1s infinite; }
@@ -227,6 +234,14 @@
       <h4>Resolução Comercial</h4>
       <div class="panel-text" id="panel-resolucao">—</div>
     </div>
+    <div class="panel-section" id="panel-pdf-section" style="display:none">
+      <h4>Documento anexado</h4>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:0.5rem">
+        <button class="btn-view-pdf" onclick="window.viewPdf()">📄 Visualizar PDF</button>
+        <button class="btn-download-pdf" onclick="window.downloadPdf()">⬇️ Baixar PDF</button>
+      </div>
+      <button class="btn-cancel" style="margin-top:8px;width:100%" onclick="window.removePdf()">🗑 Remover PDF</button>
+    </div>
     <div class="panel-footer">
       <button class="btn-cancel" onclick="window.closePanel()">Fechar</button>
       <button class="btn-save" id="panel-edit-btn" onclick="window.editFromPanel()">✏️ Editar</button>
@@ -254,6 +269,15 @@
     <div class="field-check"><input type="checkbox" id="f-credenc" /><label for="f-credenc">✅ Credenciamento já viu esta busca</label></div>
     <div class="field"><label>Observações</label><textarea id="f-obs" placeholder="Detalhes da busca..."></textarea></div>
     <div class="field"><label>Resolução Comercial</label><textarea id="f-resolucao" placeholder="Resultado / encaminhamento do comercial..."></textarea></div>
+    <div class="field">
+      <label>Documento PDF</label>
+      <div class="upload-area" onclick="document.getElementById('f-pdf').click()">
+        <div style="font-size:24px">📄</div>
+        <p id="pdf-label">Clique para anexar um PDF</p>
+      </div>
+      <input type="file" id="f-pdf" accept=".pdf" style="display:none" onchange="window.handlePdf(this)" />
+      <button type="button" id="btn-remove-pdf" style="display:none;margin-top:6px;width:100%" class="btn-cancel" onclick="window.clearPdf()">🗑 Remover PDF anexado</button>
+    </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="window.closeModal()">Cancelar</button>
       <button class="btn-save" id="btn-save" onclick="window.save()">Salvar</button>
@@ -310,6 +334,8 @@ const colRef = collection(db, "buscas");
 
 let DATA = [];
 let editId = null;
+let pdfBase64 = null;
+let pdfName = null;
 let currentPanelId = null;
 let unsubscribe = null;
 let currentFilter = 'todas';
@@ -417,6 +443,7 @@ window.openPanel = function(id) {
   document.getElementById('panel-credenc').textContent = d.credenc ? '✅ Sim' : '○ Não';
   document.getElementById('panel-obs').textContent = d.obs || '—';
   document.getElementById('panel-resolucao').textContent = d.resolucao || '—';
+  document.getElementById('panel-pdf-section').style.display = d.pdfBase64 ? 'block' : 'none';
   document.getElementById('panel-overlay').classList.add('open');
 };
 
@@ -525,6 +552,10 @@ window.openModal = function() {
   document.getElementById('f-status').value = 'aberta';
   document.getElementById('f-comercial').checked = false;
   document.getElementById('f-credenc').checked = false;
+  pdfBase64 = null; pdfName = null;
+  document.getElementById('f-pdf').value = '';
+  document.getElementById('pdf-label').textContent = 'Clique para anexar um PDF';
+  document.getElementById('btn-remove-pdf').style.display = 'none';
   document.getElementById('overlay').classList.add('open');
   setTimeout(() => document.getElementById('f-proc').focus(), 100);
 };
@@ -550,6 +581,8 @@ window.save = async function() {
     credenc: document.getElementById('f-credenc').checked,
     obs: document.getElementById('f-obs').value.trim(),
     resolucao: document.getElementById('f-resolucao').value.trim(),
+    pdfBase64: pdfBase64,
+    pdfName: pdfName,
   };
   try {
     if (editId) {
@@ -562,6 +595,65 @@ window.save = async function() {
     window.closeModal();
   } catch(e) { alert('Erro: ' + e.message); }
   finally { btn.disabled = false; btn.textContent = 'Salvar'; }
+};
+
+window.viewPdf = function() {
+  const d = DATA.find(x => x.id === currentPanelId);
+  if (!d || !d.pdfBase64) return;
+  const byteStr = atob(d.pdfBase64);
+  const ab = new ArrayBuffer(byteStr.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+  const blob = new Blob([ab], {type: 'application/pdf'});
+  window.open(URL.createObjectURL(blob), '_blank');
+};
+
+window.downloadPdf = function() {
+  const d = DATA.find(x => x.id === currentPanelId);
+  if (!d || !d.pdfBase64) return;
+  const byteStr = atob(d.pdfBase64);
+  const ab = new ArrayBuffer(byteStr.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+  const blob = new Blob([ab], {type: 'application/pdf'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = d.pdfName || 'documento.pdf';
+  a.click(); URL.revokeObjectURL(url);
+};
+
+window.handlePdf = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 1024 * 700) {
+    alert('PDF muito grande (' + (file.size/1024).toFixed(0) + 'KB). Limite: 700KB.');
+    input.value = ''; return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    pdfBase64 = e.target.result.split(',')[1];
+    pdfName = file.name;
+    document.getElementById('pdf-label').textContent = '📄 ' + file.name;
+    document.getElementById('btn-remove-pdf').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+};
+
+window.clearPdf = function() {
+  pdfBase64 = null; pdfName = null;
+  document.getElementById('f-pdf').value = '';
+  document.getElementById('pdf-label').textContent = 'Clique para anexar um PDF';
+  document.getElementById('btn-remove-pdf').style.display = 'none';
+};
+
+window.removePdf = async function() {
+  if (!currentPanelId) return;
+  if (!confirm('Remover o PDF anexado?')) return;
+  try {
+    await updateDoc(doc(db, "buscas", currentPanelId), { pdfBase64: null, pdfName: null });
+    document.getElementById('panel-pdf-section').style.display = 'none';
+    showToast('PDF removido');
+  } catch(e) { alert('Erro: ' + e.message); }
 };
 
 document.getElementById('overlay').addEventListener('click', e => {
