@@ -239,6 +239,8 @@
       <h4>Dados do Reembolso</h4>
       <div class="panel-row"><span class="panel-label">Procedimento</span><span class="panel-value" id="panel-proc">—</span></div>
       <div class="panel-row"><span class="panel-label">Prestador</span><span class="panel-value" id="panel-prestador">—</span></div>
+      <div class="panel-row"><span class="panel-label">Telefone</span><span class="panel-value" id="panel-tel">—</span></div>
+      <div class="panel-row"><span class="panel-label">E-mail</span><span class="panel-value" id="panel-email">—</span></div>
       <div class="panel-row"><span class="panel-label">Data de Realização</span><span class="panel-value" id="panel-dtreal">—</span></div>
       <div class="panel-row"><span class="panel-label">Data de Aprovação</span><span class="panel-value" id="panel-dtaprov">—</span></div>
       <div class="panel-row"><span class="panel-label">Data de Pagamento</span><span class="panel-value" id="panel-dtpag">—</span></div>
@@ -279,6 +281,10 @@
     <div class="field"><label>Beneficiário *</label><input type="text" id="f-benef" placeholder="Nome do beneficiário" /></div>
     <div class="field"><label>Procedimento</label><input type="text" id="f-proc" placeholder="Ex: Consulta Cardiologia" /></div>
     <div class="field"><label>Prestador/Médico</label><input type="text" id="f-prestador" placeholder="Ex: Dr. João Silva" /></div>
+    <div class="field-row">
+      <div class="field"><label>Telefone</label><input type="text" id="f-tel" placeholder="Ex: (19) 99999-9999" /></div>
+      <div class="field"><label>E-mail</label><input type="text" id="f-email" placeholder="Ex: paciente@email.com" /></div>
+    </div>
     <div class="field-row">
       <div class="field"><label>Data de Realização</label><input type="date" id="f-dtreal" /></div>
       <div class="field"><label>Data de Aprovação</label><input type="date" id="f-dtaprov" /></div>
@@ -469,6 +475,8 @@ window.openPanel = function(id) {
   document.getElementById('panel-benef').textContent = d.benef || '—';
   document.getElementById('panel-proc').textContent = d.proc || '—';
   document.getElementById('panel-prestador').textContent = d.prestador || '—';
+  document.getElementById('panel-tel').textContent = d.tel || '—';
+  document.getElementById('panel-email').textContent = d.email || '—';
   document.getElementById('panel-dtreal').textContent = fmt(d.dtreal);
   document.getElementById('panel-dtaprov').textContent = fmt(d.dtaprov);
   document.getElementById('panel-dtpag').textContent = fmt(d.dtpag);
@@ -609,6 +617,8 @@ window._edit = function(id) {
   document.getElementById('f-benef').value = d.benef || '';
   document.getElementById('f-proc').value = d.proc || '';
   document.getElementById('f-prestador').value = d.prestador || '';
+  document.getElementById('f-tel').value = d.tel || '';
+  document.getElementById('f-email').value = d.email || '';
   document.getElementById('f-dtreal').value = d.dtreal || '';
   document.getElementById('f-dtaprov').value = d.dtaprov || '';
   document.getElementById('f-dtpag').value = d.dtpag || '';
@@ -656,7 +666,7 @@ window.confirmDel = async function() {
 window.openModal = function() {
   editId = null; pdfBase64 = null; pdfName = null;
   document.getElementById('modal-title').textContent = 'Novo reembolso';
-  ['f-benef','f-proc','f-prestador','f-dtreal','f-dtaprov','f-dtpag','f-vlsol','f-vlaprov','f-obs','f-resolucao'].forEach(id => document.getElementById(id).value = '');
+  ['f-benef','f-proc','f-prestador','f-tel','f-email','f-dtreal','f-dtaprov','f-dtpag','f-vlsol','f-vlaprov','f-obs','f-resolucao'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-status').value = 'aberta';
   document.getElementById('f-adm').checked = false;
   document.getElementById('f-fin').checked = false;
@@ -699,6 +709,8 @@ window.save = async function() {
     benef,
     proc: document.getElementById('f-proc').value.trim(),
     prestador: document.getElementById('f-prestador').value.trim(),
+    tel: document.getElementById('f-tel').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
     dtreal: document.getElementById('f-dtreal').value,
     dtaprov: document.getElementById('f-dtaprov').value,
     dtpag: document.getElementById('f-dtpag').value,
