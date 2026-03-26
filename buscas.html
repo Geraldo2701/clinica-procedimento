@@ -141,6 +141,45 @@
   @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
   .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
   .toast.show { opacity: 1; }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .topbar { height: auto; padding: 0.75rem 1rem; flex-wrap: wrap; gap: 8px; }
+    .topbar-left { gap: 10px; }
+    .topbar-title { font-size: 14px; }
+    .topbar-right { gap: 6px; }
+    .btn-new { padding: 6px 12px; font-size: 12px; }
+    .btn-logout { padding: 5px 10px; font-size: 11px; }
+    .topbar-left img { height: 32px; }
+    .topbar-right img { height: 28px; }
+    .container { padding: 1rem 0.75rem; }
+    .toolbar { gap: 8px; }
+    .filter-btns { width: 100%; justify-content: space-between; }
+    .filter-btn { flex: 1; text-align: center; padding: 6px 8px; font-size: 12px; }
+
+    /* Hide table, show cards */
+    .card table { display: none; }
+    .card { background: transparent; border: none; overflow: visible; }
+    .cards-mobile { display: flex; flex-direction: column; gap: 10px; }
+    .card-mobile { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem; cursor: pointer; transition: background 0.12s; }
+    .card-mobile:hover { background: var(--bg2); }
+    .card-mobile-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .card-mobile-title { font-size: 14px; font-weight: 500; color: var(--text); flex: 1; }
+    .card-mobile-row { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+    .card-mobile-row strong { color: var(--text); }
+    .card-mobile-actions { display: flex; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--border); }
+    .card-mobile-actions .btn-icon { flex: 1; text-align: center; padding: 7px; }
+
+    /* Panel full screen on mobile */
+    .panel { max-width: 100%; }
+
+    /* Modal full screen on mobile */
+    .modal { max-height: 95vh; margin: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+    .overlay { align-items: flex-end; padding: 0; }
+  }
+  @media (min-width: 769px) {
+    .cards-mobile { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -206,6 +245,7 @@
         </tbody>
       </table>
     </div>
+    <div class="cards-mobile" id="cards-mobile"></div>
   </div>
 </div>
 
