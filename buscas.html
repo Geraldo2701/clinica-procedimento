@@ -464,6 +464,37 @@ window.render = function() {
       </td>
     </tr>`;
   }).join('');
+
+  // Mobile cards
+  const mc = document.getElementById('cards-mobile');
+  if (mc) {
+    if (filtered.length === 0) {
+      mc.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text2);font-size:14px">Nenhuma busca encontrada</div>';
+    } else {
+      mc.innerHTML = filtered.map(d => {
+        const open = isOpen(d);
+        const statusPill = open
+          ? '<span class="status-pill status-open">Aberta</span>'
+          : '<span class="status-pill status-closed">Fechada</span>';
+        const id = d.id;
+        const proc = (d.proc||'').replace(/'/g,'');
+        return '<div class="card-mobile" onclick="window.openPanel(\'' + id + '\')">' +
+          '<div class="card-mobile-header">' +
+            '<div class="card-mobile-title">' + (d.proc||'—') + '</div>' +
+            statusPill +
+          '</div>' +
+          '<div class="card-mobile-row">👤 <strong>' + (d.prestador||'—') + '</strong></div>' +
+          '<div class="card-mobile-row">🔬 ' + (d.espec||'—') + '</div>' +
+          '<div class="card-mobile-row">📅 ' + (fmt(d.dtini)||'—') + (d.dtfim ? ' → ' + fmt(d.dtfim) : '') + '</div>' +
+          '<div class="card-mobile-row">ADM: ' + (d.adm ? '✅' : '○') + '  Credenc: ' + (d.credenc ? '✅' : '○') + '</div>' +
+          '<div class="card-mobile-actions" onclick="event.stopPropagation()">' +
+            '<button class="btn-icon" onclick="window._edit(\'' + id + '\')" title="Editar">✏️ Editar</button>' +
+            '<button class="btn-icon del" onclick="window._del(\'' + id + '\',\'' + proc + '\')" title="Excluir">🗑 Excluir</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
 };
 
 window.openPanel = function(id) {
