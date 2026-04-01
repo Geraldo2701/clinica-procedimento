@@ -516,9 +516,11 @@ window.openPanel = function(id) {
   document.getElementById('panel-obs').textContent = d.obs || '—';
   document.getElementById('panel-resolucao').textContent = d.resolucao || '—';
   var pdfs = d.pdfs || (d.pdfBase64 ? [{name: d.pdfName||'documento.pdf', base64: d.pdfBase64}] : []);
-  document.getElementById('panel-pdf-section').style.display = pdfs.length > 0 ? 'block' : 'none';
+  var pdfSection = document.getElementById('panel-pdf-section');
   var pdfList = document.getElementById('panel-pdf-list');
-  pdfList.innerHTML = '';
+  if (pdfSection) pdfSection.style.display = pdfs.length > 0 ? 'block' : 'none';
+  if (pdfList) pdfList.innerHTML = '';
+  if (!pdfList) { console.error('panel-pdf-list not found!'); }
   pdfs.forEach(function(pdf, idx) {
     var div = document.createElement('div');
     div.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--bg2);border-radius:var(--radius);font-size:13px;flex-wrap:wrap';
