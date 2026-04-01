@@ -831,6 +831,31 @@ window.sendEmail = function() {
   window.open('mailto:' + d.email + '?subject=' + subject + '&body=' + body);
 };
 
+window.addPdfFromPanel = async function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 1024 * 700) {
+    alert('PDF muito grande (' + (file.size/1024).toFixed(0) + 'KB). Limite: 700KB.');
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      const d = DATA.find(function(x){ return x.id === currentPanelId; });
+      if (!d) { alert('Registro não encontrado.'); return; }
+      const existing = d.pdfs ? d.pdfs.slice() : (d.pdfBase64 ? [{name: d.pdfName||'documento.pdf', base64: d.pdfBase64}] : []);
+      existing.push({ name: file.name, base64: e.target.result.split(',')[1] });
+      await updateDoc(doc(db, 'reembolsos', currentPanelId), { pdfs: existing, pdfBase64: null, pdfName: null });
+      showToast('PDF adicionado com sucesso!');
+      input.value = '';
+    } catch(err) {
+      alert('Erro ao adicionar PDF: ' + err.message);
+    }
+  };
+  reader.readAsDataURL(file);
+};
+
 window.removePdf = async function() {
   if (PERFIL === 'fin') { alert('Perfil Financeiro não pode remover PDFs.'); return; }
   if (!currentPanelId) return;
