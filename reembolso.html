@@ -600,7 +600,7 @@ window.handlePdf = function(input) {
     pdfBase64 = e.target.result.split(',')[1];
     pdfName = file.name;
     document.getElementById('pdf-label').textContent = '📄 ' + file.name;
-    document.getElementById('btn-remove-pdf').style.display = 'block';
+    if (PERFIL === 'adm') document.getElementById('btn-remove-pdf').style.display = 'block';
   };
   reader.readAsDataURL(file);
 };
@@ -687,7 +687,7 @@ window._edit = function(id) {
   document.getElementById('f-obs').value = d.obs || '';
   document.getElementById('f-resolucao').value = d.resolucao || '';
   document.getElementById('pdf-label').textContent = d.pdfName ? '📄 ' + d.pdfName : 'Clique para anexar um PDF';
-  document.getElementById('btn-remove-pdf').style.display = d.pdfName ? 'block' : 'none';
+  document.getElementById('btn-remove-pdf').style.display = (PERFIL === 'adm' && d.pdfName) ? 'block' : 'none';
   document.getElementById('overlay').classList.add('open');
 };
 
@@ -775,6 +775,7 @@ window.sendEmail = function() {
 };
 
 window.removePdf = async function() {
+  if (PERFIL === 'fin') { alert('Perfil Financeiro não pode remover PDFs.'); return; }
   if (!currentPanelId) return;
   if (!confirm('Remover o PDF anexado a este registro?')) return;
   try {
@@ -785,6 +786,7 @@ window.removePdf = async function() {
 };
 
 window.clearPdf = function() {
+  if (PERFIL === 'fin') return;
   pdfBase64 = null; pdfName = null;
   document.getElementById('f-pdf').value = '';
   document.getElementById('pdf-label').textContent = 'Clique para anexar um PDF';
