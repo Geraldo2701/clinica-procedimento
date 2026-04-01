@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Reembolso</title>
 <style>
@@ -224,6 +225,7 @@
             <th>Status</th>
             <th>ADM</th>
             <th>Fin.</th>
+            <th>PDF</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -679,8 +681,7 @@ window._edit = function(id) {
   const d = DATA.find(x => x.id === id);
   if (!d) return;
   editId = id;
-  pdfBase64 = d.pdfBase64 || null;
-  pdfName = d.pdfName || null;
+  pdfFiles = d.pdfs ? [...d.pdfs] : (d.pdfBase64 ? [{name: d.pdfName||'documento.pdf', base64: d.pdfBase64}] : []);
   document.getElementById('modal-title').textContent = 'Editar reembolso';
   document.getElementById('f-benef').value = d.benef || '';
   document.getElementById('f-proc').value = d.proc || '';
@@ -712,7 +713,8 @@ window._edit = function(id) {
   document.getElementById('f-obs').value = d.obs || '';
   document.getElementById('f-resolucao').value = d.resolucao || '';
   document.getElementById('pdf-label').textContent = d.pdfName ? '📄 ' + d.pdfName : 'Clique para anexar um PDF';
-  document.getElementById('btn-remove-pdf').style.display = (PERFIL === 'adm' && d.pdfName) ? 'block' : 'none';
+  renderPdfFormList();
+  document.getElementById('btn-remove-pdf').style.display = 'none';
   document.getElementById('overlay').classList.add('open');
 };
 
