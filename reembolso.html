@@ -269,12 +269,8 @@
       <div class="panel-text" id="panel-resolucao">—</div>
     </div>
     <div class="panel-section" id="panel-pdf-section" style="display:none">
-      <h4>Documento anexado</h4>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn-view-pdf" onclick="window.viewPdf()">📄 Visualizar PDF</button>
-        <button class="btn-view-pdf" onclick="window.downloadPdf()" style="background:var(--success-bg);color:var(--success-text)">⬇️ Baixar PDF</button>
-      </div>
-      <div id="btn-remove-pdf-panel"></div>
+      <h4>Documentos anexados</h4>
+      <div id="panel-pdf-list" style="display:flex;flex-direction:column;gap:6px;margin-top:.5rem"></div>
     </div>
     <div class="panel-section" id="panel-notify-section" style="display:none">
       <h4>Notificar beneficiário</h4>
