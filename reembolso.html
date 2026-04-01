@@ -452,34 +452,43 @@ window.render = function() {
     return;
   }
 
-  tb.innerHTML = filtered.map(d => {
+  tb.innerHTML = '';
+  filtered.forEach(function(d) {
     const open = isOpen(d);
-    const statusPill = open
-      ? '<span class="status-pill status-open">Aberta</span>'
-      : '<span class="status-pill status-closed">Fechada</span>';
-    const admIcon = d.adm ? '<span class="flag-yes" title="ADM viu">✅</span>' : '<span class="flag-no">○</span>';
-    const finIcon = d.fin ? '<span class="flag-yes" title="Financeiro viu">✅</span>' : '<span class="flag-no">○</span>';
-    const id = d.id;
-    const benef = (d.benef||"").replace(/'/g, "");
-    let row = '<tr onclick="window.openPanel(\'' + id + '\')">';
-    row += '<td class="wrap-cell">' + (d.benef||'—') + '</td>';
-    row += '<td>' + (d.proc||'—') + '</td>';
-    row += '<td>' + (d.prestador||'—') + '</td>';
-    row += '<td>' + fmt(d.dtreal) + '</td>';
-    row += '<td>' + fmt(d.dtaprov) + '</td>';
-    row += '<td>' + fmt(d.dtpag) + '</td>';
-    row += '<td>' + fmtVal(d.vlsol) + '</td>';
-    row += '<td>' + fmtVal(d.vlaprov) + '</td>';
-    row += '<td style="text-align:center">' + statusPill + '</td>';
-    row += '<td style="text-align:center">' + admIcon + '</td>';
-    row += '<td style="text-align:center">' + finIcon + '</td>';
-    row += '<td onclick="event.stopPropagation()">';
-    row += '<div class="actions">';
-    row += '<button class="btn-icon" onclick="window._edit(\'' + id + '\')" title="Editar">✏️</button>';
-    row += '<button class="btn-icon del" onclick="window._del(\'' + id + '\',\'' + benef + '\')" title="Excluir">🗑</button>';
-    row += '</div></td></tr>';
-    return row;
-  }).join('');
+    const statusPill = open ? '<span class="status-pill status-open">Aberta</span>' : '<span class="status-pill status-closed">Fechada</span>';
+    const admIcon = d.adm ? '<span class="flag-yes">✅</span>' : '<span class="flag-no">○</span>';
+    const finIcon = d.fin ? '<span class="flag-yes">✅</span>' : '<span class="flag-no">○</span>';
+    const pdfs = d.pdfs ? d.pdfs : (d.pdfBase64 ? [{name: d.pdfName||'doc.pdf', base64: d.pdfBase64}] : []);
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="wrap-cell">' + (d.benef||'—') + '</td>' +
+      '<td>' + (d.proc||'—') + '</td>' +
+      '<td>' + (d.prestador||'—') + '</td>' +
+      '<td>' + fmt(d.dtreal) + '</td>' +
+      '<td>' + fmt(d.dtaprov) + '</td>' +
+      '<td>' + fmt(d.dtpag) + '</td>' +
+      '<td>' + fmtVal(d.vlsol) + '</td>' +
+      '<td>' + fmtVal(d.vlaprov) + '</td>' +
+      '<td style="text-align:center">' + statusPill + '</td>' +
+      '<td style="text-align:center">' + admIcon + '</td>' +
+      '<td style="text-align:center">' + finIcon + '</td>' +
+      '<td style="text-align:center">' + (pdfs.length > 0 ? '<span class="has-pdf">'+pdfs.length+' PDF</span>' : '—') + '</td>' +
+      '<td style="text-align:center"><div class="actions"></div></td>';
+    tr.onclick = (function(id){ return function(){ window.openPanel(id); }; })(d.id);
+    tr.querySelector('td:last-child').onclick = function(e){ e.stopPropagation(); };
+    const actions = tr.querySelector('.actions');
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn-icon'; editBtn.title = 'Editar'; editBtn.textContent = '✏️';
+    editBtn.onclick = (function(id){ return function(e){ e.stopPropagation(); window._edit(id); }; })(d.id);
+    actions.appendChild(editBtn);
+    if (PERFIL === 'adm') {
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-icon del'; delBtn.title = 'Excluir'; delBtn.textContent = '🗑';
+      delBtn.onclick = (function(id, nome){ return function(e){ e.stopPropagation(); window._del(id, nome); }; })(d.id, d.benef||'');
+      actions.appendChild(delBtn);
+    }
+    tb.appendChild(tr);
+  });
 };
 
 window.openPanel = function(id) {
