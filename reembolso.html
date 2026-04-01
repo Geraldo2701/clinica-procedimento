@@ -69,18 +69,19 @@
   .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
   thead th { text-align: left; font-size: 11px; font-weight: 500; color: var(--text2); padding: 10px 12px; border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
-  thead th:nth-child(1) { width: 14%; }
-  thead th:nth-child(2) { width: 13%; }
-  thead th:nth-child(3) { width: 12%; }
-  thead th:nth-child(4) { width: 10%; }
-  thead th:nth-child(5) { width: 10%; }
-  thead th:nth-child(6) { width: 10%; }
-  thead th:nth-child(7) { width: 9%; }
-  thead th:nth-child(8) { width: 9%; }
-  thead th:nth-child(9) { width: 6%; text-align: center; }
-  thead th:nth-child(10) { width: 6%; text-align: center; }
+  thead th:nth-child(1) { width: 13%; }
+  thead th:nth-child(2) { width: 11%; }
+  thead th:nth-child(3) { width: 11%; }
+  thead th:nth-child(4) { width: 8%; }
+  thead th:nth-child(5) { width: 8%; }
+  thead th:nth-child(6) { width: 8%; }
+  thead th:nth-child(7) { width: 8%; }
+  thead th:nth-child(8) { width: 8%; }
+  thead th:nth-child(9) { width: 7%; text-align: center; }
+  thead th:nth-child(10) { width: 5%; text-align: center; }
   thead th:nth-child(11) { width: 5%; text-align: center; }
-  thead th:nth-child(12) { width: 6%; text-align: center; }
+  thead th:nth-child(12) { width: 5%; text-align: center; }
+  thead th:nth-child(13) { width: 6%; text-align: center; }
   tbody tr { border-bottom: 0.5px solid var(--border); transition: background 0.12s; cursor: pointer; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: var(--bg2); }
@@ -230,7 +231,7 @@
           </tr>
         </thead>
         <tbody id="tbody">
-          <tr><td colspan="12"><div class="empty">Carregando...</div></td></tr>
+          <tr><td colspan="13"><div class="empty">Carregando...</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -450,7 +451,7 @@ window.render = function() {
 
   const tb = document.getElementById('tbody');
   if (filtered.length === 0) {
-    tb.innerHTML = '<tr><td colspan="12"><div class="empty">Nenhum reembolso encontrado</div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="13"><div class="empty">Nenhum reembolso encontrado</div></td></tr>';
     return;
   }
 
@@ -476,17 +477,19 @@ window.render = function() {
       '<td style="text-align:center">' + finIcon + '</td>' +
       '<td style="text-align:center">' + (pdfs.length > 0 ? '<span class="has-pdf">'+pdfs.length+' PDF</span>' : '—') + '</td>' +
       '<td style="text-align:center"><div class="actions"></div></td>';
-    tr.onclick = (function(id){ return function(){ window.openPanel(id); }; })(d.id);
-    tr.querySelector('td:last-child').onclick = function(e){ e.stopPropagation(); };
+    tr.style.cursor = 'pointer';
+    tr.addEventListener('click', (function(id){ return function(e){ 
+      if (!e.target.closest('.actions')) window.openPanel(id); 
+    }; })(d.id));
     const actions = tr.querySelector('.actions');
     const editBtn = document.createElement('button');
     editBtn.className = 'btn-icon'; editBtn.title = 'Editar'; editBtn.textContent = '✏️';
-    editBtn.onclick = (function(id){ return function(e){ e.stopPropagation(); window._edit(id); }; })(d.id);
+    editBtn.addEventListener('click', (function(id){ return function(e){ e.stopPropagation(); window._edit(id); }; })(d.id));
     actions.appendChild(editBtn);
     if (PERFIL === 'adm') {
       const delBtn = document.createElement('button');
       delBtn.className = 'btn-icon del'; delBtn.title = 'Excluir'; delBtn.textContent = '🗑';
-      delBtn.onclick = (function(id, nome){ return function(e){ e.stopPropagation(); window._del(id, nome); }; })(d.id, d.benef||'');
+      delBtn.addEventListener('click', (function(id, nome){ return function(e){ e.stopPropagation(); window._del(id, nome); }; })(d.id, d.benef||''));
       actions.appendChild(delBtn);
     }
     tb.appendChild(tr);
