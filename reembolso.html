@@ -324,7 +324,7 @@
       <label>Documento PDF</label>
       <div class="upload-area" onclick="document.getElementById('f-pdf').click()">
         <div style="font-size:24px">📄</div>
-        <p id="pdf-label">Clique para anexar um PDF</p>
+        <p id="pdf-label">Clique para anexar um ou mais PDFs (máx. 700KB cada)</p>
       </div>
       <input type="file" id="f-pdf" accept=".pdf" style="display:none" onchange="window.handlePdf(this)" />
       <button type="button" id="btn-remove-pdf" style="display:none;margin-top:6px;width:100%" class="btn-cancel" onclick="window.clearPdf()">🗑 Remover PDF anexado</button>
@@ -390,8 +390,7 @@ let editId = null;
 let currentPanelId = null;
 let unsubscribe = null;
 let currentFilter = 'todas';
-let pdfBase64 = null;
-let pdfName = null;
+let pdfFiles = []; // array of {name, base64}
 
 function fmt(d) {
   if (!d) return '—';
@@ -505,16 +504,33 @@ window.openPanel = function(id) {
   document.getElementById('panel-fin').textContent = d.fin ? '✅ Sim' : '○ Não';
   document.getElementById('panel-obs').textContent = d.obs || '—';
   document.getElementById('panel-resolucao').textContent = d.resolucao || '—';
-  document.getElementById('panel-pdf-section').style.display = d.pdfBase64 ? 'block' : 'none';
-  // Only ADM can remove PDF
-  var removePdfDiv = document.getElementById('btn-remove-pdf-panel');
-  if (removePdfDiv) {
-    if (PERFIL === 'adm' && d.pdfBase64) {
-      removePdfDiv.innerHTML = '<button class="btn-cancel" style="margin-top:8px;width:100%" onclick="window.removePdf()">🗑 Remover PDF</button>';
-    } else {
-      removePdfDiv.innerHTML = '';
+  var pdfs = d.pdfs || (d.pdfBase64 ? [{name: d.pdfName||'documento.pdf', base64: d.pdfBase64}] : []);
+  document.getElementById('panel-pdf-section').style.display = pdfs.length > 0 ? 'block' : 'none';
+  var pdfList = document.getElementById('panel-pdf-list');
+  pdfList.innerHTML = '';
+  pdfs.forEach(function(pdf, idx) {
+    var div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--bg2);border-radius:var(--radius);font-size:13px;flex-wrap:wrap';
+    div.innerHTML = '📄 ' + pdf.name;
+    var btnView = document.createElement('button');
+    btnView.className = 'btn-info'; btnView.style.cssText = 'padding:4px 10px;font-size:12px;margin-left:auto';
+    btnView.textContent = 'Ver';
+    btnView.onclick = (function(b64){ return function(){ window._openPdf(b64); }; })(pdf.base64);
+    div.appendChild(btnView);
+    var btnDown = document.createElement('button');
+    btnDown.className = 'btn-success'; btnDown.style.cssText = 'padding:4px 10px;font-size:12px';
+    btnDown.textContent = '⬇️';
+    btnDown.onclick = (function(b64, nm){ return function(){ window._downloadPdf(b64, nm); }; })(pdf.base64, pdf.name);
+    div.appendChild(btnDown);
+    if (PERFIL === 'adm') {
+      var btnDel = document.createElement('button');
+      btnDel.className = 'btn-cancel'; btnDel.style.cssText = 'padding:4px 10px;font-size:12px';
+      btnDel.textContent = '🗑';
+      btnDel.onclick = (function(i){ return function(){ window.removePdf(i); }; })(idx);
+      div.appendChild(btnDel);
     }
-  }
+    pdfList.appendChild(div);
+  });
   const canNotify = d.fin === true && d.dtpag;
   document.getElementById('panel-notify-section').style.display = canNotify ? 'block' : 'none';
   document.getElementById('panel-overlay').classList.add('open');
@@ -721,7 +737,7 @@ window.confirmDel = async function() {
 };
 
 window.openModal = function() {
-  editId = null; pdfBase64 = null; pdfName = null;
+  editId = null; pdfFiles = [];
   document.getElementById('modal-title').textContent = 'Novo reembolso';
   // Apply perfil restrictions
   const isAdmFields = PERFIL === 'fin';
@@ -785,6 +801,28 @@ window.removePdf = async function() {
   } catch(e) { alert('Erro: ' + e.message); }
 };
 
+function renderPdfFormList() {
+  var label = document.getElementById('pdf-label');
+  label.textContent = pdfFiles.length > 0 ? pdfFiles.length + ' arquivo(s) anexado(s)' : 'Clique para anexar um ou mais PDFs (máx. 700KB cada)';
+  var container = document.getElementById('pdf-form-list');
+  if (!container) return;
+  container.innerHTML = '';
+  pdfFiles.forEach(function(f, idx) {
+    var div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 8px;background:var(--bg2);border-radius:var(--radius);font-size:13px';
+    div.innerHTML = '📄 ' + f.name;
+    if (PERFIL === 'adm') {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.style.cssText = 'margin-left:auto;background:none;border:none;cursor:pointer;color:var(--danger-text);font-size:13px';
+      btn.textContent = '🗑';
+      btn.onclick = (function(i){ return function(){ pdfFiles.splice(i,1); renderPdfFormList(); }; })(idx);
+      div.appendChild(btn);
+    }
+    container.appendChild(div);
+  });
+}
+
 window.clearPdf = function() {
   if (PERFIL === 'fin') return;
   pdfBase64 = null; pdfName = null;
@@ -820,8 +858,9 @@ window.save = async function() {
     fin: document.getElementById('f-fin').checked,
     obs: document.getElementById('f-obs').value.trim(),
     resolucao: document.getElementById('f-resolucao').value.trim(),
-    pdfBase64: pdfBase64,
-    pdfName: pdfName,
+    pdfs: pdfFiles,
+    pdfBase64: null,
+    pdfName: null,
   };
   try {
     if (editId) {
