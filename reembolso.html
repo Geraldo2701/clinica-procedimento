@@ -495,6 +495,7 @@ window.render = function() {
 window.openPanel = function(id) {
   const d = DATA.find(x => x.id === id);
   if (!d) return;
+  try {
   currentPanelId = id;
   const open = isOpen(d);
   document.getElementById('panel-benef').textContent = d.benef || '—';
@@ -544,6 +545,7 @@ window.openPanel = function(id) {
   const canNotify = d.fin === true && d.dtpag;
   document.getElementById('panel-notify-section').style.display = canNotify ? 'block' : 'none';
   document.getElementById('panel-overlay').classList.add('open');
+  } catch(err) { console.error('openPanel error:', err.message, err.stack); }
 };
 
 window.closePanel = function() {
