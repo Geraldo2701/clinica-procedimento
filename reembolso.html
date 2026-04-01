@@ -268,9 +268,17 @@
       <h4>Resolução</h4>
       <div class="panel-text" id="panel-resolucao">—</div>
     </div>
-    <div class="panel-section" id="panel-pdf-section" style="display:none">
+    <div class="panel-section" id="panel-pdf-section">
       <h4>Documentos anexados</h4>
-      <div id="panel-pdf-list" style="display:flex;flex-direction:column;gap:6px;margin-top:.5rem"></div>
+      <div id="panel-pdf-list" style="display:flex;flex-direction:column;gap:6px;margin-top:.5rem">
+        <div style="color:var(--text2);font-size:13px">Nenhum documento anexado</div>
+      </div>
+      <div style="margin-top:8px">
+        <label style="display:inline-block;background:var(--info-bg);color:var(--info-text);border-radius:var(--radius);padding:7px 14px;font-size:13px;font-weight:500;cursor:pointer">
+          📎 Adicionar PDF
+          <input type="file" id="panel-add-pdf" accept=".pdf" style="display:none" onchange="window.addPdfFromPanel(this)"/>
+        </label>
+      </div>
     </div>
     <div class="panel-section" id="panel-notify-section" style="display:none">
       <h4>Notificar beneficiário</h4>
@@ -357,7 +365,7 @@
 <script>
 ['doLogin','doLogout','openModal','closeModal','openPanel','closePanel',
  'editFromPanel','save','render','setFilter','_edit','_del',
- 'cancelDel','confirmDel','downloadPdf','sendWhatsapp','sendEmail'].forEach(fn => {
+ 'cancelDel','confirmDel','downloadPdf','_openPdf','_downloadPdf','addPdfFromPanel','sendWhatsapp','sendEmail'].forEach(fn => {
   window[fn] = function() { console.warn(fn + ' not yet loaded'); };
 });
 </script>
@@ -559,6 +567,25 @@ window.editFromPanel = function() {
   const id = currentPanelId;
   window.closePanel();
   window._edit(id);
+};
+
+window._openPdf = function(base64) {
+  const bytes = atob(base64);
+  const ab = new ArrayBuffer(bytes.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < bytes.length; i++) ia[i] = bytes.charCodeAt(i);
+  window.open(URL.createObjectURL(new Blob([ab], {type:'application/pdf'})), '_blank');
+};
+
+window._downloadPdf = function(base64, name) {
+  const bytes = atob(base64);
+  const ab = new ArrayBuffer(bytes.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < bytes.length; i++) ia[i] = bytes.charCodeAt(i);
+  const url = URL.createObjectURL(new Blob([ab], {type:'application/pdf'}));
+  const a = document.createElement('a');
+  a.href = url; a.download = name || 'documento.pdf';
+  a.click(); URL.revokeObjectURL(url);
 };
 
 window.viewPdf = function() {
