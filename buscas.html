@@ -163,6 +163,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
     <div class="topbar-right">
+      <button class="btn-tv" id="btn-tv" onclick="window.toggleTV()" title="Modo TV">📺 Modo TV</button>
       <button class="btn-new" onclick="window.openModal()">+ Nova busca</button>
       <button class="btn-out" onclick="window.doLogout()">Sair</button>
       <img src="data:image/png;base64,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" alt="ANS" style="height:36px;width:auto"/>
@@ -277,6 +278,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="update-toast" id="update-toast">
+  <div class="update-dot"></div>
+  <span id="update-msg">Novo registro atualizado!</span>
+</div>
+<div class="tv-indicator" id="tv-indicator">
+  <div class="tv-dot"></div>
+  <span id="tv-countdown">Atualizando em 30s</span>
+</div>
 
 <script>
 var _fns = ['doLogin','doLogout','openModal','closeModal','openPanel','closePanel',
@@ -368,6 +377,13 @@ window.render = function() {
     const open = isOpen(d);
     const card = document.createElement('div');
     card.className = 'card';
+
+    // Highlight class based on flags
+    var highlightClass = '';
+    if (d.adm && d.credenc) highlightClass = 'highlight-both';
+    else if (d.adm) highlightClass = 'highlight-adm';
+    else if (d.credenc) highlightClass = 'highlight-cred';
+    card.className = 'card' + (highlightClass ? ' ' + highlightClass : '');
 
     const tags = document.createElement('div');
     tags.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap';
@@ -537,6 +553,49 @@ window.clearPdf = function() {
   document.getElementById('btn-remove-pdf').style.display = 'none';
 };
 
+let tvMode = false;
+let tvTimer = null;
+let tvSeconds = 30;
+let prevDataSnapshot = '';
+
+window.toggleTV = function() {
+  tvMode = !tvMode;
+  const btn = document.getElementById('btn-tv');
+  const indicator = document.getElementById('tv-indicator');
+  if (tvMode) {
+    btn.classList.add('active');
+    btn.textContent = '📺 Modo TV ON';
+    indicator.classList.add('show');
+    startTvTimer();
+  } else {
+    btn.classList.remove('active');
+    btn.textContent = '📺 Modo TV';
+    indicator.classList.remove('show');
+    clearInterval(tvTimer);
+  }
+};
+
+function startTvTimer() {
+  tvSeconds = 30;
+  clearInterval(tvTimer);
+  tvTimer = setInterval(function() {
+    tvSeconds--;
+    document.getElementById('tv-countdown').textContent = 'Atualizando em ' + tvSeconds + 's';
+    if (tvSeconds <= 0) {
+      tvSeconds = 30;
+      document.getElementById('tv-countdown').textContent = 'Atualizando...';
+      window.render();
+    }
+  }, 1000);
+}
+
+function showUpdateToast(msg) {
+  const el = document.getElementById('update-toast');
+  document.getElementById('update-msg').textContent = msg || 'Registro atualizado!';
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 4000);
+}
+
 window.doLogin = function() {
   if (document.getElementById('pwd').value === SENHA) {
     document.getElementById('login').style.display = 'none';
@@ -559,9 +618,23 @@ window.doLogout = function() {
 };
 
 function startFirestore() {
+  var firstLoad = true;
   const q = query(colRef, orderBy('createdAt','desc'));
   unsubscribe = onSnapshot(q, snap => {
-    DATA = snap.docs.map(d => ({id:d.id,...d.data()}));
+    const newData = snap.docs.map(d => ({id:d.id,...d.data()}));
+    if (!firstLoad) {
+      snap.docChanges().forEach(function(change) {
+        if (change.type === 'modified') {
+          const d = change.doc.data();
+          showUpdateToast('Atualizado: ' + (d.proc||'registro'));
+          if (tvMode) startTvTimer(); // reset TV timer on update
+        } else if (change.type === 'added') {
+          showUpdateToast('Nova busca adicionada!');
+        }
+      });
+    }
+    firstLoad = false;
+    DATA = newData;
     setStatus('ok');
     window.render();
   }, () => setStatus('err'));
