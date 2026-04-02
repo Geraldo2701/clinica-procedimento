@@ -383,12 +383,14 @@ window.render = function() {
     const card = document.createElement('div');
     card.className = 'card';
 
-    // Highlight: comercial=true + credenc=false = amarelo (credenciamento precisa ver)
-    //            credenc=true + comercial=false = verde (comercial precisa ver resposta)
+    // COM=true, CRED=false = amarelo (credenciamento precisa ver)
+    // CRED=true, COM=false = verde (comercial precisa ver resposta)
+    // ambos ou nenhum = normal
     var highlightClass = '';
-    if (d.comercial && !d.credenc) highlightClass = 'highlight-comercial';
-    else if (d.credenc && !d.comercial) highlightClass = 'highlight-credenc';
-    card.className = 'card' + (highlightClass ? ' ' + highlightClass : '');
+    if (d.comercial === true && !d.credenc) highlightClass = 'highlight-comercial';
+    else if (d.credenc === true && !d.comercial) highlightClass = 'highlight-credenc';
+    card.className = 'card';
+    if (highlightClass) card.classList.add(highlightClass);
 
     const tags = document.createElement('div');
     tags.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap';
