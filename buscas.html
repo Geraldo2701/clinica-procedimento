@@ -241,8 +241,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <option value="fechada">Fechada</option>
       </select>
     </div>
-    <div class="field-check"><input type="checkbox" id="f-comercial"/><label for="f-comercial">✅ Comercial já viu</label></div>
-    <div class="field-check"><input type="checkbox" id="f-credenc"/><label for="f-credenc">✅ Credenciamento já viu</label></div>
+    <div class="field-check"><input type="checkbox" id="f-comercial" onchange="if(this.checked){document.getElementById('f-credenc').checked=false;}"/><label for="f-comercial">✅ Comercial já viu</label></div>
+    <div class="field-check"><input type="checkbox" id="f-credenc" onchange="if(this.checked){document.getElementById('f-comercial').checked=false;}"/><label for="f-credenc">✅ Credenciamento já viu</label></div>
     <div class="field"><label>Observações</label><textarea id="f-obs" placeholder="Detalhes da busca..."></textarea></div>
     <div class="field"><label>Resolução Comercial</label><textarea id="f-resolucao" placeholder="Resultado / encaminhamento..."></textarea></div>
     <div class="field">
@@ -362,7 +362,12 @@ window.render = function() {
     const mf = currentFilter === 'todas' || (currentFilter === 'abertas' && open) || (currentFilter === 'fechadas' && !open);
     return mq && mf;
   });
-  filtered.sort((a,b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+  // Sort by updatedAt first (recently modified comes to top), then createdAt
+  filtered.sort((a,b) => {
+    const ta = (a.updatedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0);
+    const tb = (b.updatedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0);
+    return tb - ta;
+  });
 
   document.getElementById('count').textContent = filtered.length + ' busca' + (filtered.length !== 1 ? 's' : '');
   const grid = document.getElementById('grid');
@@ -378,11 +383,11 @@ window.render = function() {
     const card = document.createElement('div');
     card.className = 'card';
 
-    // Highlight class based on flags
+    // Highlight: comercial=true + credenc=false = amarelo (credenciamento precisa ver)
+    //            credenc=true + comercial=false = verde (comercial precisa ver resposta)
     var highlightClass = '';
-    if (d.adm && d.credenc) highlightClass = 'highlight-both';
-    else if (d.adm) highlightClass = 'highlight-adm';
-    else if (d.credenc) highlightClass = 'highlight-cred';
+    if (d.comercial && !d.credenc) highlightClass = 'highlight-comercial';
+    else if (d.credenc && !d.comercial) highlightClass = 'highlight-credenc';
     card.className = 'card' + (highlightClass ? ' ' + highlightClass : '');
 
     const tags = document.createElement('div');
@@ -401,7 +406,18 @@ window.render = function() {
 
     const title = document.createElement('div');
     title.className = 'card-title';
-    title.textContent = d.proc || '—';
+    // Show "ATUALIZADO" badge if updated in last 10 minutes
+    const lastUpdate = d.updatedAt?.toMillis?.() || d.createdAt?.toMillis?.() || 0;
+    const isRecent = (Date.now() - lastUpdate) < 10 * 60 * 1000;
+    if (isRecent) {
+      const newBadge = document.createElement('span');
+      newBadge.style.cssText = 'font-size:10px;background:#ef9f27;color:#fff;padding:2px 7px;border-radius:20px;font-weight:600;margin-left:6px;vertical-align:middle';
+      newBadge.textContent = 'ATUALIZADO';
+      title.textContent = d.proc || '—';
+      title.appendChild(newBadge);
+    } else {
+      title.textContent = d.proc || '—';
+    }
     card.appendChild(title);
 
     const info = document.createElement('div');
@@ -427,12 +443,16 @@ window.render = function() {
     flags.className = 'card-flags';
     flags.style.cssText = 'display:flex;gap:6px;align-items:center';
     const admSpan = document.createElement('span');
-    admSpan.title = 'Comercial';
-    admSpan.style.cssText = 'font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;' + (d.comercial ? 'background:var(--success-bg);color:var(--success-text)' : 'background:var(--bg3);color:var(--text2)');
+    admSpan.title = 'Comercial viu — card amarelo quando marcado';
+    // amarelo quando comercial viu mas credenc não
+    var admBg = d.comercial && !d.credenc ? 'background:#faeeda;color:#854f0b' : (d.comercial ? 'background:var(--success-bg);color:var(--success-text)' : 'background:var(--bg3);color:var(--text2)');
+    admSpan.style.cssText = 'font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;' + admBg;
     admSpan.textContent = d.comercial ? '✅ COM' : '○ COM';
     const credSpan = document.createElement('span');
-    credSpan.title = 'Credenciamento';
-    credSpan.style.cssText = 'font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;' + (d.credenc ? 'background:var(--success-bg);color:var(--success-text)' : 'background:var(--bg3);color:var(--text2)');
+    credSpan.title = 'Credenciamento viu — card verde quando marcado';
+    // verde quando credenc viu mas comercial não
+    var credBg = d.credenc && !d.comercial ? 'background:var(--success-bg);color:var(--success-text)' : (d.credenc ? 'background:var(--success-bg);color:var(--success-text)' : 'background:var(--bg3);color:var(--text2)');
+    credSpan.style.cssText = 'font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;' + credBg;
     credSpan.textContent = d.credenc ? '✅ CRED' : '○ CRED';
     flags.appendChild(admSpan);
     flags.appendChild(credSpan);
@@ -713,6 +733,10 @@ window.save = async function() {
   if (!proc) { alert('Preencha o procedimento.'); return; }
   const btn = document.getElementById('btn-save');
   btn.disabled = true; btn.textContent = 'Salvando...';
+  const resolucao = document.getElementById('f-resolucao').value.trim();
+  const oldResolucao = editId ? (DATA.find(x => x.id === editId) || {}).resolucao || '' : '';
+  const resolucaoChanged = resolucao !== oldResolucao && resolucao !== '';
+
   const data = {
     proc,
     prestador: document.getElementById('f-prestador').value.trim(),
@@ -720,10 +744,11 @@ window.save = async function() {
     dtini: document.getElementById('f-dtini').value,
     dtfim: document.getElementById('f-dtfim').value,
     status: document.getElementById('f-status').value,
-    comercial: document.getElementById('f-comercial').checked,
-    credenc: document.getElementById('f-credenc').checked,
+    // Se resolucao mudou: marca comercial e desmarca credenc automaticamente
+    comercial: resolucaoChanged ? true : document.getElementById('f-comercial').checked,
+    credenc: resolucaoChanged ? false : document.getElementById('f-credenc').checked,
     obs: document.getElementById('f-obs').value.trim(),
-    resolucao: document.getElementById('f-resolucao').value.trim(),
+    resolucao: resolucao,
     pdfBase64: pdfBase64,
     pdfName: pdfName,
   };
@@ -732,7 +757,7 @@ window.save = async function() {
       await updateDoc(doc(db,"buscas",editId), {...data, updatedAt: serverTimestamp()});
       showToast('Busca atualizada');
     } else {
-      await addDoc(colRef, {...data, createdAt: serverTimestamp()});
+      await addDoc(colRef, {...data, createdAt: serverTimestamp(), updatedAt: serverTimestamp()});
       showToast('Busca cadastrada');
     }
     window.closeModal();
