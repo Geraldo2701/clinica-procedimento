@@ -196,6 +196,7 @@
     </div>
     <div class="topbar-right">
       <button class="btn-new" onclick="window.openModal()">+ Novo reembolso</button>
+      <button id="btn-numerar" style="display:none;background:var(--warning-bg);color:var(--warning-text);border:0.5px solid var(--warning-text);border-radius:var(--radius);padding:7px 12px;font-size:12px;cursor:pointer" onclick="window.numerarRegistros()">🔢 Numerar registros</button>
       <button class="btn-logout" onclick="window.doLogout()">Sair</button>
       <img src="data:image/png;base64,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" alt="ANS" style="height:36px;width:auto;" />
     </div>
@@ -215,11 +216,12 @@
       <table>
         <thead>
           <tr>
+            <th style="width:6%">Nº</th>
             <th>Beneficiário</th>
             <th>Procedimento</th>
             <th>Prestador</th>
             <th>Dt. Realização</th>
-            <th>Dt. Aprovação</th>
+            <th>Dt. Solicitação</th>
             <th>Dt. Pagamento</th>
             <th>Vl. Solicitado</th>
             <th>Vl. Aprovado</th>
@@ -231,7 +233,7 @@
           </tr>
         </thead>
         <tbody id="tbody">
-          <tr><td colspan="13"><div class="empty">Carregando...</div></td></tr>
+          <tr><td colspan="14"><div class="empty">Carregando...</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -242,17 +244,21 @@
 <div class="panel-overlay" id="panel-overlay">
   <div class="panel">
     <div class="panel-header">
-      <div class="panel-title" id="panel-benef">—</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="panel-title" id="panel-benef">—</div>
+        <span style="font-size:12px;background:var(--info-bg);color:var(--info-text);padding:3px 10px;border-radius:20px;font-weight:500" id="panel-numero"></span>
+      </div>
       <button class="panel-close" onclick="window.closePanel()">✕</button>
     </div>
     <div class="panel-section">
       <h4>Dados do Reembolso</h4>
       <div class="panel-row"><span class="panel-label">Procedimento</span><span class="panel-value" id="panel-proc">—</span></div>
       <div class="panel-row"><span class="panel-label">Prestador</span><span class="panel-value" id="panel-prestador">—</span></div>
+      <div class="panel-row"><span class="panel-label">Dados Bancários</span><span class="panel-value" id="panel-banco">—</span></div>
       <div class="panel-row"><span class="panel-label">Telefone</span><span class="panel-value" id="panel-tel">—</span></div>
       <div class="panel-row"><span class="panel-label">E-mail</span><span class="panel-value" id="panel-email">—</span></div>
       <div class="panel-row"><span class="panel-label">Data de Realização</span><span class="panel-value" id="panel-dtreal">—</span></div>
-      <div class="panel-row"><span class="panel-label">Data de Aprovação</span><span class="panel-value" id="panel-dtaprov">—</span></div>
+      <div class="panel-row"><span class="panel-label">Data de Solicitação</span><span class="panel-value" id="panel-dtsolic">—</span></div>
       <div class="panel-row"><span class="panel-label">Data de Pagamento</span><span class="panel-value" id="panel-dtpag">—</span></div>
       <div class="panel-row"><span class="panel-label">Valor Solicitado</span><span class="panel-value" id="panel-vlsol">—</span></div>
       <div class="panel-row"><span class="panel-label">Valor Aprovado</span><span class="panel-value" id="panel-vlaprov">—</span></div>
@@ -302,13 +308,14 @@
     <div class="field"><label>Beneficiário *</label><input type="text" id="f-benef" placeholder="Nome do beneficiário" /></div>
     <div class="field"><label>Procedimento</label><input type="text" id="f-proc" placeholder="Ex: Consulta Cardiologia" /></div>
     <div class="field"><label>Prestador/Médico</label><input type="text" id="f-prestador" placeholder="Ex: Dr. João Silva" /></div>
+    <div class="field"><label>Dados Bancários</label><input type="text" id="f-banco" placeholder="Ex: Banco Bradesco, Ag. 1234, CC 56789-0, PIX: cpf@email.com"/></div>
     <div class="field-row">
       <div class="field"><label>Telefone</label><input type="text" id="f-tel" placeholder="Ex: (19) 99999-9999" /></div>
       <div class="field"><label>E-mail</label><input type="text" id="f-email" placeholder="Ex: paciente@email.com" /></div>
     </div>
     <div class="field-row">
       <div class="field"><label>Data de Realização</label><input type="date" id="f-dtreal" /></div>
-      <div class="field"><label>Data de Aprovação</label><input type="date" id="f-dtaprov" /></div>
+      <div class="field"><label>Data de Solicitação</label><input type="date" id="f-dtsolic" /></div>
     </div>
     <div class="field-row">
       <div class="field"><label>Data de Pagamento</label><input type="date" id="f-dtpag" /></div>
@@ -372,7 +379,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, getDocs, doc, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const SENHA_ADM = "plano@567";
 const SENHA_FIN = "plano@456";
@@ -449,13 +456,13 @@ window.render = function() {
     return matchQ && matchF;
   });
 
-  filtered.sort((a,b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+  filtered.sort((a,b) => ((b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0) - (a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0)));
 
   document.getElementById('count').textContent = filtered.length + ' reembolso' + (filtered.length !== 1 ? 's' : '');
 
   const tb = document.getElementById('tbody');
   if (filtered.length === 0) {
-    tb.innerHTML = '<tr><td colspan="13"><div class="empty">Nenhum reembolso encontrado</div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="14"><div class="empty">Nenhum reembolso encontrado</div></td></tr>';
     return;
   }
 
@@ -468,11 +475,12 @@ window.render = function() {
     const pdfs = d.pdfs ? d.pdfs : (d.pdfBase64 ? [{name: d.pdfName||'doc.pdf', base64: d.pdfBase64}] : []);
     const tr = document.createElement('tr');
     tr.innerHTML =
+      '<td style="text-align:center;font-size:12px;font-weight:500;color:var(--info-text)">' + (d.numero||'—') + '</td>' +
       '<td class="wrap-cell">' + (d.benef||'—') + '</td>' +
       '<td>' + (d.proc||'—') + '</td>' +
       '<td>' + (d.prestador||'—') + '</td>' +
       '<td>' + fmt(d.dtreal) + '</td>' +
-      '<td>' + fmt(d.dtaprov) + '</td>' +
+      '<td>' + fmt(d.dtsolic) + '</td>' +
       '<td>' + fmt(d.dtpag) + '</td>' +
       '<td>' + fmtVal(d.vlsol) + '</td>' +
       '<td>' + fmtVal(d.vlaprov) + '</td>' +
@@ -507,12 +515,14 @@ window.openPanel = function(id) {
   currentPanelId = id;
   const open = isOpen(d);
   document.getElementById('panel-benef').textContent = d.benef || '—';
+  document.getElementById('panel-numero').textContent = d.numero ? 'Nº ' + d.numero : '';
   document.getElementById('panel-proc').textContent = d.proc || '—';
   document.getElementById('panel-prestador').textContent = d.prestador || '—';
+  document.getElementById('panel-banco').textContent = d.banco || '—';
   document.getElementById('panel-tel').textContent = d.tel || '—';
   document.getElementById('panel-email').textContent = d.email || '—';
   document.getElementById('panel-dtreal').textContent = fmt(d.dtreal);
-  document.getElementById('panel-dtaprov').textContent = fmt(d.dtaprov);
+  document.getElementById('panel-dtsolic').textContent = fmt(d.dtsolic);
   document.getElementById('panel-dtpag').textContent = fmt(d.dtpag);
   document.getElementById('panel-vlsol').textContent = fmtVal(d.vlsol);
   document.getElementById('panel-vlaprov').textContent = fmtVal(d.vlaprov);
@@ -624,14 +634,14 @@ window.printRecord = function() {
   area.style.display = 'block';
   area.innerHTML = `
     <div class="print-logo"><img src="" + document.querySelector('.topbar-left img').src + "" style="height:50px" /></div>
-    <div class="print-title">Reembolso</div>
+    <div class="print-title">${d.numero ? 'Reembolso Nº ' + d.numero : 'Reembolso'}</div>
     <div class="print-row"><span class="print-label">Beneficiário:</span><span>${d.benef||'—'}</span></div>
     <div class="print-row"><span class="print-label">Procedimento:</span><span>${d.proc||'—'}</span></div>
     <div class="print-row"><span class="print-label">Prestador:</span><span>${d.prestador||'—'}</span></div>
     <div class="print-row"><span class="print-label">Telefone:</span><span>${d.tel||'—'}</span></div>
     <div class="print-row"><span class="print-label">E-mail:</span><span>${d.email||'—'}</span></div>
     <div class="print-row"><span class="print-label">Data de Realização:</span><span>${fmt(d.dtreal)}</span></div>
-    <div class="print-row"><span class="print-label">Data de Aprovação:</span><span>${fmt(d.dtaprov)}</span></div>
+    <div class="print-row"><span class="print-label">Data de Solicitação:</span><span>${fmt(d.dtsolic)}</span></div>
     <div class="print-row"><span class="print-label">Data de Pagamento:</span><span>${fmt(d.dtpag)}</span></div>
     <div class="print-row"><span class="print-label">Valor Solicitado:</span><span>${fmtVal(d.vlsol)}</span></div>
     <div class="print-row"><span class="print-label">Valor Aprovado:</span><span>${fmtVal(d.vlaprov)}</span></div>
@@ -684,11 +694,30 @@ window.doLogin = function() {
   if (PERFIL === 'adm') {
     badge.textContent = 'Administrativo';
     badge.className = 'perfil-badge perfil-adm';
+    document.getElementById('btn-numerar').style.display = 'inline-block';
   } else {
     badge.textContent = 'Financeiro';
     badge.className = 'perfil-badge perfil-fin';
   }
   startFirestore();
+};
+
+window.numerarRegistros = async function() {
+  if (!confirm('Isso vai numerar todos os registros sem número a partir de 2301. Continuar?')) return;
+  try {
+    const snap = await getDocs(query(colRef, orderBy('createdAt', 'asc')));
+    let count = 0;
+    let nextNum = 2301;
+    for (const d of snap.docs) {
+      if (!d.data().numero) {
+        await updateDoc(doc(db, 'reembolsos', d.id), { numero: nextNum });
+        nextNum++;
+        count++;
+      }
+    }
+    showToast(count + ' registro(s) numerado(s)!');
+    document.getElementById('btn-numerar').style.display = 'none';
+  } catch(e) { alert('Erro: ' + e.message); }
 };
 
 window.doLogout = function() {
@@ -718,10 +747,11 @@ window._edit = function(id) {
   document.getElementById('f-benef').value = d.benef || '';
   document.getElementById('f-proc').value = d.proc || '';
   document.getElementById('f-prestador').value = d.prestador || '';
+  document.getElementById('f-banco').value = d.banco || '';
   document.getElementById('f-tel').value = d.tel || '';
   document.getElementById('f-email').value = d.email || '';
   document.getElementById('f-dtreal').value = d.dtreal || '';
-  document.getElementById('f-dtaprov').value = d.dtaprov || '';
+  document.getElementById('f-dtsolic').value = d.dtsolic || '';
   // Perfil restrictions
   const isDtpagDisabled = PERFIL === 'adm';
   const isAdmFields = PERFIL === 'fin';
@@ -731,7 +761,7 @@ window._edit = function(id) {
   // ADM cannot edit dtpag and fin flag
   document.getElementById('f-fin').disabled = isDtpagDisabled;
   // FIN can only edit: dtpag, vlaprov, status, resolucao, fin flag, pdf
-  const finOnlyFields = ['f-benef','f-proc','f-prestador','f-tel','f-email','f-dtreal','f-dtaprov','f-vlsol','f-obs'];
+  const finOnlyFields = ['f-benef','f-proc','f-prestador','f-tel','f-email','f-dtreal','f-dtsolic','f-vlsol','f-obs'];
   finOnlyFields.forEach(function(id) {
     var el = document.getElementById(id);
     if (el) { el.disabled = isAdmFields; el.style.opacity = isAdmFields ? '0.5' : '1'; }
@@ -785,14 +815,14 @@ window.openModal = function() {
   // Apply perfil restrictions
   const isAdmFields = PERFIL === 'fin';
   const isDtpagDisabled = PERFIL === 'adm';
-  ['f-benef','f-proc','f-prestador','f-tel','f-email','f-dtreal','f-dtaprov','f-vlsol','f-obs'].forEach(function(id) {
+  ['f-benef','f-proc','f-prestador','f-tel','f-email','f-dtreal','f-dtsolic','f-vlsol','f-obs'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) { el.disabled = isAdmFields; el.style.opacity = isAdmFields ? '0.5' : '1'; }
   });
   document.getElementById('f-dtpag').disabled = isDtpagDisabled;
   document.getElementById('f-dtpag').style.opacity = isDtpagDisabled ? '0.5' : '1';
   document.getElementById('f-fin').disabled = isDtpagDisabled;
-  ['f-benef','f-proc','f-prestador','f-tel','f-email','f-dtreal','f-dtaprov','f-dtpag','f-vlsol','f-vlaprov','f-obs','f-resolucao'].forEach(id => document.getElementById(id).value = '');
+  ['f-benef','f-proc','f-prestador','f-banco','f-tel','f-email','f-dtreal','f-dtsolic','f-dtpag','f-vlsol','f-vlaprov','f-obs','f-resolucao'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-status').value = 'aberta';
   document.getElementById('f-adm').checked = false;
   document.getElementById('f-fin').checked = false;
@@ -915,10 +945,11 @@ window.save = async function() {
     benef,
     proc: document.getElementById('f-proc').value.trim(),
     prestador: document.getElementById('f-prestador').value.trim(),
+    banco: document.getElementById('f-banco').value.trim(),
     tel: document.getElementById('f-tel').value.trim(),
     email: document.getElementById('f-email').value.trim(),
     dtreal: document.getElementById('f-dtreal').value,
-    dtaprov: document.getElementById('f-dtaprov').value,
+    dtsolic: document.getElementById('f-dtsolic').value,
     dtpag: document.getElementById('f-dtpag').value,
     status: document.getElementById('f-status').value,
     vlsol: parseFloat(document.getElementById('f-vlsol').value) || null,
