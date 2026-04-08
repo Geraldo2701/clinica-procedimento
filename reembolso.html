@@ -442,6 +442,10 @@ function isOpen(d) {
   return true;
 }
 
+function isNegada(d) {
+  return d.status === 'negada';
+}
+
 function setStatus(state) {
   const el = document.getElementById('status-label');
   if (state === 'ok') el.innerHTML = '<span class="status-dot dot-ok"></span>Sincronizado com a nuvem';
