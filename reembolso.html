@@ -438,7 +438,8 @@ function fmtVal(v) {
 
 function isOpen(d) {
   if (d.status === 'fechada') return false;
-  if (d.dtpag) return false;
+  if (d.status === 'fechada') return false;
+  if (d.status === 'negada') return false;
   return true;
 }
 
