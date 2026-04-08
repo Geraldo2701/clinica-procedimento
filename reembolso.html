@@ -145,6 +145,22 @@
   .perfil-badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; margin-left: 10px; }
   .perfil-adm { background: var(--info-bg); color: var(--info-text); }
   .perfil-fin { background: var(--success-bg); color: var(--success-text); }
+  /* Prazo indicator circles */
+  .prazo-circle { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; cursor: help; }
+  .prazo-verde  { background: #2d8a52; box-shadow: 0 2px 8px rgba(45,138,82,0.4); }
+  .prazo-amarelo{ background: #d4840a; box-shadow: 0 2px 8px rgba(212,132,10,0.4); }
+  .prazo-vermelho{ background: #c0392b; box-shadow: 0 2px 8px rgba(192,57,43,0.4); animation: pulsRed 1.5s infinite; }
+  .prazo-preto  { background: #6b6b67; }
+  @keyframes pulsRed { 0%,100%{box-shadow:0 2px 8px rgba(192,57,43,0.4)} 50%{box-shadow:0 2px 16px rgba(192,57,43,0.8)} }
+
+  /* Sortable columns */
+  .sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+  .sortable:hover { color: var(--text); }
+  .sort-icon { display: inline-block; margin-left: 4px; opacity: 0.4; font-size: 10px; }
+  .sortable.asc .sort-icon::after { content: '▲'; opacity: 1; }
+  .sortable.desc .sort-icon::after { content: '▼'; opacity: 1; }
+  .sortable:not(.asc):not(.desc) .sort-icon::after { content: '⇅'; }
+
   .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
   .dot-ok { background: #63b940; }
   .dot-load { background: #ef9f27; animation: pulse 1s infinite; }
@@ -217,24 +233,24 @@
       <table>
         <thead>
           <tr>
-            <th style="width:6%">Nº</th>
-            <th>Beneficiário</th>
-            <th>Procedimento</th>
-            <th>Prestador</th>
-            <th>Dt. Realização</th>
-            <th>Dt. Solicitação</th>
-            <th>Dt. Pagamento</th>
-            <th>Vl. Solicitado</th>
-            <th>Vl. Aprovado</th>
-            <th>Status</th>
-            <th>ADM</th>
-            <th>Fin.</th>
-            <th>PDF</th>
-            <th>Ações</th>
+            <th style="width:5%;text-align:center">Prazo</th>
+            <th class="sortable" id="th-numero" onclick="window.sortBy('numero')" style="width:5%">Nº<span class="sort-icon"></span></th>
+            <th class="sortable" id="th-benef" onclick="window.sortBy('benef')" style="width:16%">Beneficiário<span class="sort-icon"></span></th>
+            <th style="width:14%">Procedimento</th>
+            <th class="sortable" id="th-dtreal" onclick="window.sortBy('dtreal')" style="width:8%">Dt. Realização<span class="sort-icon"></span></th>
+            <th class="sortable" id="th-dtsolic" onclick="window.sortBy('dtsolic')" style="width:8%">Dt. Solicitação<span class="sort-icon"></span></th>
+            <th style="width:8%">Dt. Pagamento</th>
+            <th style="width:8%">Vl. Solicitado</th>
+            <th style="width:8%">Vl. Aprovado</th>
+            <th style="width:6%">Status</th>
+            <th style="width:4%">ADM</th>
+            <th style="width:4%">Fin.</th>
+            <th style="width:5%">PDF</th>
+            <th style="width:5%">Ações</th>
           </tr>
         </thead>
         <tbody id="tbody">
-          <tr><td colspan="14"><div class="empty">Carregando...</div></td></tr>
+          <tr><td colspan="15"><div class="empty">Carregando...</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -464,7 +480,7 @@ window.render = function() {
 
   const tb = document.getElementById('tbody');
   if (filtered.length === 0) {
-    tb.innerHTML = '<tr><td colspan="14"><div class="empty">Nenhum reembolso encontrado</div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="15"><div class="empty">Nenhum reembolso encontrado</div></td></tr>';
     return;
   }
 
@@ -676,6 +692,37 @@ window.handlePdf = function(input) {
     reader.readAsDataURL(file);
   });
 };
+
+let sortField = 'dtsolic';
+let sortDir = 'desc';
+
+window.sortBy = function(field) {
+  if (sortField === field) {
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortField = field;
+    sortDir = field === 'numero' ? 'desc' : 'asc';
+  }
+  // Update header classes
+  ['numero','benef','dtreal','dtsolic'].forEach(function(f) {
+    var th = document.getElementById('th-' + f);
+    if (th) { th.classList.remove('asc','desc'); if (f === sortField) th.classList.add(sortDir); }
+  });
+  window.render();
+};
+
+function prazoCircle(d) {
+  var open = isOpen(d);
+  if (!open) return '<div class="prazo-circle prazo-preto" title="Fechado">✓</div>';
+  if (!d.dtsolic) return '<div class="prazo-circle prazo-verde" title="Sem data">—</div>';
+  var parts = d.dtsolic.split('-');
+  var solic = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var dias = Math.floor((hoje - solic) / (1000*60*60*24));
+  if (dias <= 16) return '<div class="prazo-circle prazo-verde" title="' + dias + ' dias">' + dias + '</div>';
+  if (dias <= 22) return '<div class="prazo-circle prazo-amarelo" title="' + dias + ' dias - Atenção!">' + dias + '</div>';
+  return '<div class="prazo-circle prazo-vermelho" title="' + dias + ' dias - URGENTE!">' + dias + '</div>';
+}
 
 window.doLogin = function() {
   const val = document.getElementById('pwd').value;
