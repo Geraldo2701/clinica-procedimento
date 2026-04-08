@@ -69,19 +69,19 @@
   .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
   thead th { text-align: left; font-size: 11px; font-weight: 500; color: var(--text2); padding: 10px 12px; border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
-  thead th:nth-child(1) { width: 13%; }
-  thead th:nth-child(2) { width: 11%; }
-  thead th:nth-child(3) { width: 11%; }
-  thead th:nth-child(4) { width: 8%; }
-  thead th:nth-child(5) { width: 8%; }
-  thead th:nth-child(6) { width: 8%; }
-  thead th:nth-child(7) { width: 8%; }
-  thead th:nth-child(8) { width: 8%; }
-  thead th:nth-child(9) { width: 7%; text-align: center; }
-  thead th:nth-child(10) { width: 5%; text-align: center; }
-  thead th:nth-child(11) { width: 5%; text-align: center; }
-  thead th:nth-child(12) { width: 5%; text-align: center; }
-  thead th:nth-child(13) { width: 6%; text-align: center; }
+  thead th:nth-child(1)  { width: 5%;  text-align: center; } /* prazo */
+  thead th:nth-child(2)  { width: 6%;  text-align: center; } /* nº */
+  thead th:nth-child(3)  { width: 18%; }                      /* beneficiario */
+  thead th:nth-child(4)  { width: 16%; }                      /* procedimento */
+  thead th:nth-child(5)  { width: 9%;  }                      /* dt solic */
+  thead th:nth-child(6)  { width: 9%;  }                      /* dt pag */
+  thead th:nth-child(7)  { width: 9%;  }                      /* vl sol */
+  thead th:nth-child(8)  { width: 9%;  }                      /* vl aprov */
+  thead th:nth-child(9)  { width: 6%;  text-align: center; }  /* status */
+  thead th:nth-child(10) { width: 4%;  text-align: center; }  /* adm */
+  thead th:nth-child(11) { width: 4%;  text-align: center; }  /* fin */
+  thead th:nth-child(12) { width: 5%;  text-align: center; }  /* pdf */
+  thead th:nth-child(13) { width: 5%;  text-align: center; }  /* acoes */
   tbody tr { border-bottom: 0.5px solid var(--border); transition: background 0.12s; cursor: pointer; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: var(--bg2); }
@@ -234,23 +234,22 @@
         <thead>
           <tr>
             <th style="width:5%;text-align:center">Prazo</th>
-            <th class="sortable" id="th-numero" onclick="window.sortBy('numero')" style="width:5%">Nº<span class="sort-icon"></span></th>
-            <th class="sortable" id="th-benef" onclick="window.sortBy('benef')" style="width:16%">Beneficiário<span class="sort-icon"></span></th>
-            <th style="width:14%">Procedimento</th>
-            <th class="sortable" id="th-dtreal" onclick="window.sortBy('dtreal')" style="width:8%">Dt. Realização<span class="sort-icon"></span></th>
-            <th class="sortable" id="th-dtsolic" onclick="window.sortBy('dtsolic')" style="width:8%">Dt. Solicitação<span class="sort-icon"></span></th>
-            <th style="width:8%">Dt. Pagamento</th>
-            <th style="width:8%">Vl. Solicitado</th>
-            <th style="width:8%">Vl. Aprovado</th>
+            <th class="sortable" id="th-numero" onclick="window.sortBy('numero')" style="width:6%">Nº<span class="sort-icon"></span></th>
+            <th class="sortable" id="th-benef" onclick="window.sortBy('benef')" style="width:18%">Beneficiário<span class="sort-icon"></span></th>
+            <th style="width:16%">Procedimento</th>
+            <th class="sortable" id="th-dtsolic" onclick="window.sortBy('dtsolic')" style="width:9%">Dt. Solicitação<span class="sort-icon"></span></th>
+            <th style="width:9%">Dt. Pagamento</th>
+            <th style="width:9%">Vl. Solicitado</th>
+            <th style="width:9%">Vl. Aprovado</th>
             <th style="width:6%">Status</th>
             <th style="width:4%">ADM</th>
             <th style="width:4%">Fin.</th>
             <th style="width:5%">PDF</th>
-            <th style="width:5%">Ações</th>
+            <th style="width:6%">Ações</th>
           </tr>
         </thead>
         <tbody id="tbody">
-          <tr><td colspan="15"><div class="empty">Carregando...</div></td></tr>
+          <tr><td colspan="13"><div class="empty">Carregando...</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -385,12 +384,12 @@
 </div>
 
 <div class="toast" id="toast"></div>
-<div style="position:fixed;bottom:6px;right:10px;font-size:10px;color:rgba(100,100,100,0.4);z-index:1;pointer-events:none">v08.04.2026 11:25</div>
+<div style="position:fixed;bottom:6px;right:10px;font-size:10px;color:rgba(100,100,100,0.4);z-index:1;pointer-events:none">v08.04.2026 15:43</div>
 
 <script>
 ['doLogin','doLogout','openModal','closeModal','openPanel','closePanel',
- 'editFromPanel','save','render','setFilter','_edit','_del',
- 'cancelDel','confirmDel','downloadPdf','_openPdf','_downloadPdf','addPdfFromPanel','sendWhatsapp','sendEmail'].forEach(fn => {
+ 'editFromPanel','save','render','setFilter','sortBy','_edit','_del',
+ 'cancelDel','confirmDel','downloadPdf','_openPdf','_downloadPdf','addPdfFromPanel','numerarRegistros','corrigirDuplicados','sendWhatsapp','sendEmail'].forEach(fn => {
   window[fn] = function() { console.warn(fn + ' not yet loaded'); };
 });
 </script>
@@ -480,7 +479,7 @@ window.render = function() {
 
   const tb = document.getElementById('tbody');
   if (filtered.length === 0) {
-    tb.innerHTML = '<tr><td colspan="15"><div class="empty">Nenhum reembolso encontrado</div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="13"><div class="empty">Nenhum reembolso encontrado</div></td></tr>';
     return;
   }
 
@@ -493,11 +492,10 @@ window.render = function() {
     const pdfs = d.pdfs ? d.pdfs : (d.pdfBase64 ? [{name: d.pdfName||'doc.pdf', base64: d.pdfBase64}] : []);
     const tr = document.createElement('tr');
     tr.innerHTML =
-      '<td style="text-align:center;font-size:12px;font-weight:500;color:var(--info-text)">' + (d.numero||'—') + '</td>' +
+      '<td style="text-align:center">' + prazoCircle(d) + '</td>' +
+      '<td style="text-align:center;font-size:12px;font-weight:600;color:var(--info-text)">' + (d.numero||'—') + '</td>' +
       '<td class="wrap-cell">' + (d.benef||'—') + '</td>' +
       '<td>' + (d.proc||'—') + '</td>' +
-      '<td>' + (d.prestador||'—') + '</td>' +
-      '<td>' + fmt(d.dtreal) + '</td>' +
       '<td>' + fmt(d.dtsolic) + '</td>' +
       '<td>' + fmt(d.dtpag) + '</td>' +
       '<td>' + fmtVal(d.vlsol) + '</td>' +
@@ -506,6 +504,7 @@ window.render = function() {
       '<td style="text-align:center">' + admIcon + '</td>' +
       '<td style="text-align:center">' + finIcon + '</td>' +
       '<td style="text-align:center">' + (pdfs.length > 0 ? '<span class="has-pdf">'+pdfs.length+' PDF</span>' : '—') + '</td>' +
+      '<td style="text-align:center"><div class="actions"></div></td>';
       '<td style="text-align:center"><div class="actions"></div></td>';
     tr.style.cursor = 'pointer';
     tr.addEventListener('click', (function(id){ return function(e){ 
@@ -704,7 +703,7 @@ window.sortBy = function(field) {
     sortDir = field === 'numero' ? 'desc' : 'asc';
   }
   // Update header classes
-  ['numero','benef','dtreal','dtsolic'].forEach(function(f) {
+  ['numero','benef','dtsolic'].forEach(function(f) {
     var th = document.getElementById('th-' + f);
     if (th) { th.classList.remove('asc','desc'); if (f === sortField) th.classList.add(sortDir); }
   });
