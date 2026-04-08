@@ -197,6 +197,7 @@
     <div class="topbar-right">
       <button class="btn-new" onclick="window.openModal()">+ Novo reembolso</button>
       <button id="btn-numerar" style="display:none;background:var(--warning-bg);color:var(--warning-text);border:0.5px solid var(--warning-text);border-radius:var(--radius);padding:7px 12px;font-size:12px;cursor:pointer" onclick="window.numerarRegistros()">🔢 Numerar registros</button>
+      <button id="btn-corrigir" style="display:none;background:var(--danger-bg);color:var(--danger-text);border:0.5px solid var(--danger-text);border-radius:var(--radius);padding:7px 12px;font-size:12px;cursor:pointer" onclick="window.corrigirDuplicados()">🔧 Corrigir duplicados</button>
       <button class="btn-logout" onclick="window.doLogout()">Sair</button>
       <img src="data:image/png;base64,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" alt="ANS" style="height:36px;width:auto;" />
     </div>
@@ -368,6 +369,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<div style="position:fixed;bottom:6px;right:10px;font-size:10px;color:rgba(100,100,100,0.4);z-index:1;pointer-events:none">v08.04.2026 11:25</div>
 
 <script>
 ['doLogin','doLogout','openModal','closeModal','openPanel','closePanel',
@@ -379,7 +381,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, getDocs, doc, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, getDocs, getDoc, setDoc, doc, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const SENHA_ADM = "plano@567";
 const SENHA_FIN = "plano@456";
@@ -696,6 +698,7 @@ window.doLogin = function() {
     badge.textContent = 'Administrativo';
     badge.className = 'perfil-badge perfil-adm';
     document.getElementById('btn-numerar').style.display = 'inline-block';
+    document.getElementById('btn-corrigir').style.display = 'inline-block';
   } else {
     badge.textContent = 'Financeiro';
     badge.className = 'perfil-badge perfil-fin';
@@ -703,20 +706,53 @@ window.doLogin = function() {
   startFirestore();
 };
 
-window.numerarRegistros = async function() {
-  if (!confirm('Isso vai numerar todos os registros sem número a partir de 2301. Continuar?')) return;
+window.corrigirDuplicados = async function() {
+  if (!confirm('Isso vai renumerar TODOS os registros em ordem de criação a partir de 2301, corrigindo duplicados. Continuar?')) return;
   try {
     const snap = await getDocs(query(colRef, orderBy('createdAt', 'asc')));
-    let count = 0;
     let nextNum = 2301;
-    for (const d of snap.docs) {
+    let count = 0;
+    for (var i = 0; i < snap.docs.length; i++) {
+      await updateDoc(doc(db, 'reembolsos', snap.docs[i].id), { numero: nextNum });
+      nextNum++;
+      count++;
+    }
+    // Update counter
+    const counterRef = doc(db, 'config', 'reembolso_counter');
+    await setDoc(counterRef, { ultimo: nextNum - 1 });
+    showToast(count + ' registros renumerados! Último: ' + (nextNum - 1));
+    document.getElementById('btn-corrigir').style.display = 'none';
+  } catch(e) { alert('Erro: ' + e.message); }
+};
+
+window.numerarRegistros = async function() {
+  if (!confirm('Isso vai numerar todos os registros sem número. Continuar?')) return;
+  try {
+    const snap = await getDocs(query(colRef, orderBy('createdAt', 'asc')));
+    // Find highest existing number
+    let maxNum = 2300;
+    snap.docs.forEach(function(d) {
+      const n = d.data().numero;
+      if (n && n > maxNum) maxNum = n;
+    });
+    let nextNum = maxNum + 1;
+    let count = 0;
+    for (var i = 0; i < snap.docs.length; i++) {
+      const d = snap.docs[i];
       if (!d.data().numero) {
         await updateDoc(doc(db, 'reembolsos', d.id), { numero: nextNum });
         nextNum++;
         count++;
       }
     }
-    showToast(count + ' registro(s) numerado(s)!');
+    if (count === 0) {
+      showToast('Todos os registros já estão numerados!');
+    } else {
+      // Update counter to avoid future duplicates
+      const counterRef = doc(db, 'config', 'reembolso_counter');
+      await setDoc(counterRef, { ultimo: nextNum - 1 });
+      showToast(count + ' registro(s) numerado(s) a partir de ' + (maxNum + 1) + '!');
+    }
     document.getElementById('btn-numerar').style.display = 'none';
   } catch(e) { alert('Erro: ' + e.message); }
 };
@@ -968,8 +1004,26 @@ window.save = async function() {
       await updateDoc(doc(db, "reembolsos", editId), {...data, updatedAt: serverTimestamp()});
       showToast('Reembolso atualizado');
     } else {
-      await addDoc(colRef, {...data, createdAt: serverTimestamp()});
-      showToast('Reembolso cadastrado');
+      // Get next sequential number from counter
+      const counterRef = doc(db, 'config', 'reembolso_counter');
+      var nextNum = 2301;
+      try {
+        const counterSnap = await getDoc(counterRef);
+        if (counterSnap.exists()) {
+          nextNum = (counterSnap.data().ultimo || 2300) + 1;
+        } else {
+          const existingSnap = await getDocs(colRef);
+          var maxNum = 2300;
+          existingSnap.docs.forEach(function(d) {
+            const n = d.data().numero;
+            if (n && n > maxNum) maxNum = n;
+          });
+          nextNum = maxNum + 1;
+        }
+        await setDoc(counterRef, { ultimo: nextNum });
+      } catch(ce) { console.warn('Counter error:', ce); }
+      await addDoc(colRef, {...data, numero: nextNum, createdAt: serverTimestamp(), updatedAt: serverTimestamp()});
+      showToast('Reembolso Nº ' + nextNum + ' cadastrado!');
     }
     window.closeModal();
   } catch(e) { alert('Erro: ' + e.message); }
