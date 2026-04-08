@@ -474,7 +474,6 @@ window.render = function() {
   });
 
   // Sort by selected column
-  console.log('render sort:', sortField, sortDir, 'filtered:', filtered.length);
   filtered.sort(function(a, b) {
     var va, vb;
     if (sortField === 'numero') { va = Number(a.numero)||0; vb = Number(b.numero)||0; }
@@ -485,7 +484,6 @@ window.render = function() {
     if (va > vb) return sortDir === 'asc' ? 1 : -1;
     return 0;
   });
-  console.log('first after sort:', filtered[0] ? (filtered[0].numero + ' ' + filtered[0].benef) : 'empty');
 
   document.getElementById('count').textContent = filtered.length + ' reembolso' + (filtered.length !== 1 ? 's' : '');
 
@@ -708,14 +706,12 @@ let sortField = 'dtsolic';
 let sortDir = 'desc';
 
 window.sortBy = function(field) {
-  console.log('sortBy called:', field);
   if (sortField === field) {
     sortDir = sortDir === 'asc' ? 'desc' : 'asc';
   } else {
     sortField = field;
     sortDir = field === 'numero' ? 'desc' : 'asc';
   }
-  console.log('sortField:', sortField, 'sortDir:', sortDir, 'DATA length:', DATA.length);
   ['numero','benef','dtsolic'].forEach(function(f) {
     var th = document.getElementById('th-' + f);
     if (th) { th.classList.remove('asc','desc'); if (f === sortField) th.classList.add(sortDir); }
