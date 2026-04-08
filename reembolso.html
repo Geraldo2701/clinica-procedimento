@@ -226,6 +226,7 @@
         <button class="filter-btn active" id="btn-todas" onclick="window.setFilter('todas')">Todas</button>
         <button class="filter-btn" id="btn-abertas" onclick="window.setFilter('abertas')">Só abertas</button>
         <button class="filter-btn" id="btn-fechadas" onclick="window.setFilter('fechadas')">Só fechadas</button>
+    <button class="filter-btn" id="btn-negadas" onclick="window.setFilter('negadas')">Só negadas</button>
       </div>
       <span class="badge" id="count">—</span>
     </div>
@@ -339,6 +340,7 @@
         <select id="f-status">
           <option value="aberta">Aberta</option>
           <option value="fechada">Fechada</option>
+          <option value="negada">Negada</option>
         </select>
       </div>
     </div>
@@ -496,7 +498,7 @@ window.render = function() {
   tb.innerHTML = '';
   filtered.forEach(function(d) {
     const open = isOpen(d);
-    const statusPill = open ? '<span class="status-pill status-open">Aberta</span>' : '<span class="status-pill status-closed">Fechada</span>';
+    const statusPill = isNegada(d) ? '<span class="status-pill status-negada">Negada</span>' : (open ? '<span class="status-pill status-open">Aberta</span>' : '<span class="status-pill status-closed">Fechada</span>');
     const admIcon = d.adm ? '<span class="flag-yes">✅</span>' : '<span class="flag-no">○</span>';
     const finIcon = d.fin ? '<span class="flag-yes">✅</span>' : '<span class="flag-no">○</span>';
     const pdfs = d.pdfs ? d.pdfs : (d.pdfBase64 ? [{name: d.pdfName||'doc.pdf', base64: d.pdfBase64}] : []);
@@ -553,9 +555,9 @@ window.openPanel = function(id) {
   document.getElementById('panel-dtpag').textContent = fmt(d.dtpag);
   document.getElementById('panel-vlsol').textContent = fmtVal(d.vlsol);
   document.getElementById('panel-vlaprov').textContent = fmtVal(d.vlaprov);
-  document.getElementById('panel-status').innerHTML = open
-    ? '<span class="status-pill status-open">Aberta</span>'
-    : '<span class="status-pill status-closed">Fechada</span>';
+  document.getElementById('panel-status').innerHTML = isNegada(d)
+    ? '<span class="status-pill status-negada">Negada</span>'
+    : (open ? '<span class="status-pill status-open">Aberta</span>' : '<span class="status-pill status-closed">Fechada</span>');
   document.getElementById('panel-adm').textContent = d.adm ? '✅ Sim' : '○ Não';
   document.getElementById('panel-fin').textContent = d.fin ? '✅ Sim' : '○ Não';
   document.getElementById('panel-obs').textContent = d.obs || '—';
@@ -721,6 +723,7 @@ window.sortBy = function(field) {
 
 function prazoCircle(d) {
   var open = isOpen(d);
+  if (isNegada(d)) return '<div class="prazo-circle prazo-vermelho" title="Negado" style="background:#6b3a3a">✗</div>';
   if (!open) return '<div class="prazo-circle prazo-preto" title="Fechado">✓</div>';
   if (!d.dtsolic) return '<div class="prazo-circle prazo-verde" title="Sem data">—</div>';
   var parts = d.dtsolic.split('-');
