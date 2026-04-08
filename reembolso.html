@@ -696,13 +696,14 @@ let sortField = 'dtsolic';
 let sortDir = 'desc';
 
 window.sortBy = function(field) {
+  console.log('sortBy called:', field);
   if (sortField === field) {
     sortDir = sortDir === 'asc' ? 'desc' : 'asc';
   } else {
     sortField = field;
     sortDir = field === 'numero' ? 'desc' : 'asc';
   }
-  // Update header classes
+  console.log('sortField:', sortField, 'sortDir:', sortDir, 'DATA length:', DATA.length);
   ['numero','benef','dtsolic'].forEach(function(f) {
     var th = document.getElementById('th-' + f);
     if (th) { th.classList.remove('asc','desc'); if (f === sortField) th.classList.add(sortDir); }
