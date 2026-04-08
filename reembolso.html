@@ -475,7 +475,7 @@ window.render = function() {
       [d.benef, d.proc, d.prestador, d.obs, d.resolucao].map(v => String(v||'')).join(' ').toLowerCase().includes(w)
     );
     const open = isOpen(d);
-    const matchF = currentFilter === 'todas' || (currentFilter === 'abertas' && open) || (currentFilter === 'fechadas' && !open);
+    const matchF = currentFilter === 'todas' || (currentFilter === 'abertas' && isOpen(d)) || (currentFilter === 'fechadas' && !isOpen(d) && !isNegada(d)) || (currentFilter === 'negadas' && isNegada(d));
     return matchQ && matchF;
   });
 
