@@ -11,4 +11,5 @@ Link para acessar a ferramenta: https://geraldo2701.github.io/clinica-procedimen
 
 Link para acessar a ferramenta: https://geraldo2701.github.io/clinica-procedimento/buscas
 
-Link para acessar a ferramenta: https://geraldo2701.github.io/clinica-procedimento/buscas
+Link para acessar a ferramenta: https://geraldo2701.github.io/clinica-procedimento/migrar
+
