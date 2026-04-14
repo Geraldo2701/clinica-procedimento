@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<title>Migração PSC Saúde</title>
+<style>
+body{font-family:sans-serif;max-width:700px;margin:2rem auto;padding:1rem;background:#f5f5f3}
+h2{color:#1a6b3c;margin-bottom:1rem}
+.card{background:#fff;border-radius:8px;padding:1.5rem;margin-bottom:1rem;border:1px solid #ddd}
+.btn{background:#1a6b3c;color:#fff;border:none;border-radius:6px;padding:10px 20px;cursor:pointer;font-size:14px;font-weight:500;margin-right:8px}
+.btn:hover{opacity:.85}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-danger{background:#c0392b}
+.log{background:#1a1a18;color:#63b940;font-family:monospace;font-size:12px;padding:1rem;border-radius:6px;height:300px;overflow-y:auto;white-space:pre-wrap;margin-top:1rem}
+.progress{background:#e8f5ee;border-radius:4px;height:8px;margin-top:8px}
+.progress-bar{background:#1a6b3c;height:8px;border-radius:4px;transition:width .3s}
+.status{font-size:13px;color:#5a5a55;margin-top:4px}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:500}
+.badge-ok{background:#eaf3de;color:#3b6d11}
+.badge-err{background:#fcebeb;color:#a32d2d}
+.badge-wait{background:#faeeda;color:#854f0b}
+</style>
+</head>
+<body>
+
+<h2>🔄 Migração PSC Saúde</h2>
+<p style="color:#5a5a55;margin-bottom:1.5rem;font-size:14px">Migra os dados do Firebase antigo para o novo projeto da empresa.</p>
+
+<div class="card">
+  <h3 style="margin-bottom:1rem;font-size:15px">Status das coleções</h3>
+  <div style="display:flex;flex-direction:column;gap:8px" id="status-list">
+    <div>📁 buscas — <span class="badge badge-wait" id="st-buscas">aguardando</span></div>
+    <div>📁 reembolsos — <span class="badge badge-wait" id="st-reembolsos">aguardando</span></div>
+    <div>📁 config — <span class="badge badge-wait" id="st-config">aguardando</span></div>
+  </div>
+  <div class="progress" style="margin-top:1rem"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="status" id="status-text">Pronto para iniciar</div>
+</div>
+
+<div class="card">
+  <button class="btn" id="btn-start" onclick="startMigration()">▶ Iniciar migração</button>
+  <button class="btn" id="btn-verify" onclick="verifyMigration()" disabled>✅ Verificar</button>
+</div>
+
+<div class="log" id="log">Aguardando início...\n</div>
+
+<script type="module">
+// ============================================================
+// ORIGEM — Firebase antigo (clinica-procedimento)
+// ============================================================
+import { initializeApp as initOld } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore as getOldFS, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+// ============================================================
+// DESTINO — Firebase novo (psc-saude)
+// ============================================================
+import { initializeApp as initNew } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore as getNewFS, collection as newCol, doc, setDoc, getDocs as getNewDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const OLD_CONFIG = {
+  apiKey: "AIzaSyCVkYMXaO1sWKEG6jh1-7flgRuUtxPf5sc",
+  projectId: "clinica-procedimento",
+  appId: "1:34683100986:web:e8ac5d73e483a3073f7a03"
+};
+
+const NEW_CONFIG = {
+  apiKey: "AIzaSyCDRhKBhxyJoSB4Fp2xmtCUVbUerD38W_Q",
+  projectId: "psc-saude",
+  appId: "1:1051182475975:web:8fa6bc10f663a8033a2ce2"
+};
+
+const oldApp = initOld(OLD_CONFIG, 'old');
+const newApp = initNew(NEW_CONFIG, 'new');
+const dbOld = getOldFS(oldApp);
+const dbNew = getNewFS(newApp);
+
+const COLECOES = ['buscas', 'reembolsos', 'config'];
+
+function log(msg) {
+  const el = document.getElementById('log');
+  el.textContent += msg + '\n';
+  el.scrollTop = el.scrollHeight;
+}
+
+function setStatus(col, status, type) {
+  const el = document.getElementById('st-' + col);
+  if (el) { el.textContent = status; el.className = 'badge badge-' + type; }
+}
+
+function setProgress(pct, text) {
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('status-text').textContent = text;
+}
+
+window.startMigration = async function() {
+  document.getElementById('btn-start').disabled = true;
+  log('🚀 Iniciando migração...');
+  log('📌 Origem: clinica-procedimento');
+  log('📌 Destino: psc-saude\n');
+
+  let totalDocs = 0;
+  let migratedDocs = 0;
+  let errors = 0;
+
+  for (var ci = 0; ci < COLECOES.length; ci++) {
+    const colName = COLECOES[ci];
+    setStatus(colName, 'lendo...', 'wait');
+    log('📁 Lendo coleção: ' + colName);
+
+    try {
+      const snap = await getDocs(collection(dbOld, colName));
+      const docs = snap.docs;
+      totalDocs += docs.length;
+      log('   → ' + docs.length + ' documentos encontrados');
+      setStatus(colName, 'migrando ' + docs.length + ' docs...', 'wait');
+
+      for (var di = 0; di < docs.length; di++) {
+        const d = docs[di];
+        try {
+          await setDoc(doc(dbNew, colName, d.id), d.data());
+          migratedDocs++;
+          const pct = Math.round((migratedDocs / totalDocs) * 100);
+          setProgress(pct, 'Migrando ' + colName + '... ' + migratedDocs + '/' + totalDocs);
+        } catch(e) {
+          errors++;
+          log('   ❌ Erro doc ' + d.id + ': ' + e.message);
+        }
+      }
+      setStatus(colName, docs.length + ' docs migrados ✓', 'ok');
+      log('   ✅ ' + colName + ' concluído!\n');
+    } catch(e) {
+      setStatus(colName, 'erro!', 'err');
+      log('   ❌ Erro na coleção ' + colName + ': ' + e.message + '\n');
+      errors++;
+    }
+  }
+
+  setProgress(100, 'Migração concluída!');
+  log('═══════════════════════════════');
+  log('✅ Migração finalizada!');
+  log('   Total migrado: ' + migratedDocs + ' documentos');
+  if (errors > 0) log('   ⚠️ Erros: ' + errors);
+  log('═══════════════════════════════');
+  document.getElementById('btn-verify').disabled = false;
+};
+
+window.verifyMigration = async function() {
+  log('\n🔍 Verificando dados no novo Firebase...');
+  for (const colName of COLECOES) {
+    try {
+      const snap = await getNewDocs(newCol(dbNew, colName));
+      log('   📁 ' + colName + ': ' + snap.size + ' documentos');
+    } catch(e) {
+      log('   ❌ ' + colName + ': ' + e.message);
+    }
+  }
+  log('✅ Verificação concluída!');
+};
+</script>
+</body>
+</html>
