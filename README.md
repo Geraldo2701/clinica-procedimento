@@ -1,11 +1,11 @@
 # clinica-procedimento
 clinicas e seus procedimentos
 
-Link para acessar a ferramenta: https://geraldo2701.github.io/clinica-procedimento/menu_psc
-
 Link para acessar a ferramenta: https://geraldo2701.github.io/clinica-procedimento/
 
 Link para acessar a ferramenta: https://geraldo2701.github.io/clinica-procedimento/reembolso
+
+Link para acessar a ferramenta: https://geraldo2701.github.io/clinica-procedimento/guia
 
 Link para acessar a ferramenta: https://geraldo2701.github.io/clinica-procedimento/manutencao
 
